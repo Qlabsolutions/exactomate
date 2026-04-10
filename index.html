@@ -28,8 +28,9 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tx)
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg.full{grid-column:1/-1}
 label{font-size:11px;font-weight:500;color:var(--tx2);text-transform:uppercase;letter-spacing:.6px}
-input{background:var(--bg);border:1px solid var(--bord);border-radius:5px;padding:8px 11px;color:var(--tx);font-family:inherit;font-size:13px;transition:border-color .15s;width:100%}
-input:focus{outline:none;border-color:var(--acc)}
+input,select{background:var(--bg);border:1px solid var(--bord);border-radius:5px;padding:8px 11px;color:var(--tx);font-family:inherit;font-size:13px;transition:border-color .15s;width:100%}
+input:focus,select:focus{outline:none;border-color:var(--acc)}
+select option{background:var(--surf)}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border-radius:5px;border:none;font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .15s;text-decoration:none}
 .bp{background:var(--acc);color:#fff}.bp:hover{background:var(--acc2)}
 .bs{background:var(--surf2);color:var(--tx);border:1px solid var(--bord)}.bs:hover{border-color:var(--acc);color:var(--acc)}
@@ -44,13 +45,13 @@ table.ut td{padding:9px 12px;border-bottom:1px solid var(--bord);vertical-align:
 table.ut tr:last-child td{border-bottom:none}
 .tdi{background:transparent;border:1px solid transparent;border-radius:3px;padding:3px 7px;color:var(--tx);font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%}
 .tdi:focus{border-color:var(--acc);outline:none;background:var(--bg)}
-.lig{display:grid;grid-template-columns:32px 1fr 92px 86px 86px 50px 82px 34px;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid var(--bord)}
-.lig:last-child{border-bottom:none}
-.lih{display:grid;grid-template-columns:32px 1fr 92px 86px 86px 50px 82px 34px;gap:6px;padding:5px 0;border-bottom:2px solid var(--bord);margin-bottom:3px}
+.lirow{display:grid;grid-template-columns:28px 1fr 100px 90px 80px 80px 60px 80px 28px;gap:5px;align-items:center;padding:6px 0;border-bottom:1px solid var(--bord)}
+.lirow:last-child{border-bottom:none}
+.lih{display:grid;grid-template-columns:28px 1fr 100px 90px 80px 80px 60px 80px 28px;gap:5px;padding:5px 0;border-bottom:2px solid var(--bord);margin-bottom:3px}
 .lih span{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3)}
 .lnum{font-size:10px;color:var(--tx3);font-family:'IBM Plex Mono',monospace;text-align:center}
-.tdis{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--grn);font-weight:500}
-.sbar{background:var(--surf2);border:1px solid var(--bord);border-radius:9px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.tdis{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--grn);font-weight:500;text-align:right}
+.sbar{background:var(--surf2);border:1px solid var(--bord);border-radius:9px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:12px}
 .si{text-align:center}.slbl{font-size:10.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
 .sval{font-size:19px;font-weight:700;font-family:'IBM Plex Mono',monospace}.sval.g{color:var(--grn)}
 .pgui{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:9px;margin-top:10px}
@@ -59,28 +60,20 @@ table.ut tr:last-child td{border-bottom:none}
 .pdel{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.7);border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
 .pdrop{border:2px dashed var(--bord);border-radius:7px;padding:26px;text-align:center;color:var(--tx3);cursor:pointer;transition:all .15s;font-size:12.5px}
 .pdrop:hover{border-color:var(--acc);color:var(--acc);background:rgba(37,99,235,.04)}
-
-/* Generate page */
 .gen-box{background:var(--surf);border:1px solid var(--bord);border-radius:14px;padding:36px;text-align:center;margin-top:8px}
 .gen-title{font-size:18px;font-weight:700;margin-bottom:8px}
 .gen-sub{font-size:13px;color:var(--tx2);margin-bottom:28px;line-height:1.6}
 .gen-btn-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
 .big-btn{background:var(--grn);color:#fff;font-size:15px;padding:13px 32px;border-radius:9px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .15s;width:220px}
-.big-btn:hover{background:#16a34a}
-.big-btn:disabled{opacity:.5;cursor:not-allowed}
-/* The key: a real <a> tag that Safari can tap */
-.pdf-link{
-  display:none;
-  background:#1d4ed8;color:#fff;font-size:15px;padding:13px 32px;
-  border-radius:9px;font-weight:600;text-align:center;
-  text-decoration:none;width:220px;
-}
+.big-btn:hover{background:#16a34a}.big-btn:disabled{opacity:.5;cursor:not-allowed}
+.pdf-link{display:none;background:#1d4ed8;color:#fff;font-size:15px;padding:13px 32px;border-radius:9px;font-weight:600;text-align:center;text-decoration:none;width:220px}
 .spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .status{font-size:12.5px;color:var(--tx2);margin-top:4px;min-height:18px}
 .status.ok{color:var(--grn)}.status.err{color:var(--red)}
 .iphone-tip{background:rgba(37,99,235,0.1);border:1px solid var(--acc);border-radius:8px;padding:12px 16px;font-size:12.5px;color:var(--tx2);line-height:1.6;margin-top:16px;text-align:left}
 .iphone-tip strong{color:var(--tx)}
+.room-card{background:var(--surf2);border:1px solid var(--bord);border-radius:8px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
 </style>
 </head>
 <body>
@@ -88,72 +81,102 @@ table.ut tr:last-child td{border-bottom:none}
   <nav class="sidebar">
     <div class="logo">X<span>act</span>Gen</div>
     <div class="nav-sec">Setup</div>
-    <button class="nav-btn active" onclick="nav('company',this)">🏢 Company Info</button>
-    <button class="nav-btn" onclick="nav('claim',this)">📋 Claim Info</button>
+    <button class="nav-btn active" onclick="nav('company',this)">&#127970; Company Info</button>
+    <button class="nav-btn" onclick="nav('claim',this)">&#128203; Claim Info</button>
     <div class="nav-sec">Estimate</div>
-    <button class="nav-btn" onclick="nav('pricelist',this)">💲 Price List</button>
-    <button class="nav-btn" onclick="nav('lineitems',this)">📝 Line Items</button>
-    <button class="nav-btn" onclick="nav('photos',this)">📷 Photos</button>
+    <button class="nav-btn" onclick="nav('pricelist',this)">&#36; Price List</button>
+    <button class="nav-btn" onclick="nav('rooms',this)">&#127968; Rooms</button>
+    <button class="nav-btn" onclick="nav('lineitems',this)">&#128221; Line Items</button>
+    <button class="nav-btn" onclick="nav('photos',this)">&#128247; Photos</button>
     <div class="nav-sec">Output</div>
-    <button class="nav-btn" onclick="nav('generate',this)">⬇️ Generate PDF</button>
+    <button class="nav-btn" onclick="nav('generate',this)">&#11015; Generate PDF</button>
   </nav>
+
   <div class="main">
 
+    <!-- COMPANY -->
     <div id="pg-company">
-      <div class="ptitle">Company Info</div><div class="psub">Appears in every estimate header.</div>
+      <div class="ptitle">Company Info</div>
+      <div class="psub">Appears in the header of every page.</div>
       <div class="card">
         <div class="fg2">
           <div class="fg full"><label>Company Name</label><input id="co-name" value="No limits restoration LLC"/></div>
           <div class="fg"><label>Email</label><input id="co-email" value="nolimitsolutions18@gmail.com"/></div>
-          <div class="fg"><label>Phone</label><input id="co-phone" value="(754) 280-6618"/></div>
+          <div class="fg"><label>Phone</label><input id="co-phone" value=""/></div>
           <div class="fg"><label>Street Address</label><input id="co-addr" value="424 SW Seventh St"/></div>
           <div class="fg"><label>City / State / Zip</label><input id="co-city" value="Miami 33130"/></div>
+          <div class="fg full">
+            <label>Company Logo (top-left of every page)</label>
+            <div class="pdrop" onclick="document.getElementById('logo-in').click()">Click to upload logo PNG/JPG — or leave blank for the NR box</div>
+            <input type="file" id="logo-in" accept="image/*" style="display:none" onchange="loadLogo(event)"/>
+            <div id="logo-prev" style="margin-top:8px"></div>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- CLAIM -->
     <div id="pg-claim" style="display:none">
-      <div class="ptitle">Claim Info</div><div class="psub">Insured and claim details.</div>
+      <div class="ptitle">Claim Info</div>
+      <div class="psub">Insured and estimate details for the cover page.</div>
       <div class="card">
         <div class="ctitle">Insured</div>
         <div class="fg2">
-          <div class="fg"><label>Insured Name</label><input id="insured" value="PIERRE DUJOUR"/></div>
+          <div class="fg"><label>Client / Insured Name</label><input id="insured" value="PIERRE DUJOUR"/></div>
           <div class="fg"><label>Property Address</label><input id="prop-addr" value="2014 NE 168th St APT 1"/></div>
-          <div class="fg"><label>City / State / Zip</label><input id="prop-city" value="N Miami Beach, FL 33162"/></div>
-          <div class="fg"><label>Claim Rep</label><input id="claim-rep" value="No limits restoration LLC"/></div>
+          <div class="fg"><label>Property City / State / Zip</label><input id="prop-city" value="N Miami Beach, FL 33162"/></div>
+          <div class="fg"><label>Operator</label><input id="operator" value="ADMIN"/></div>
           <div class="fg"><label>Estimator</label><input id="estimator" value="No limits restoration LLC"/></div>
         </div>
       </div>
       <div class="card">
-        <div class="ctitle">Claim Details</div>
+        <div class="ctitle">Estimate Details</div>
         <div class="fg3">
-          <div class="fg"><label>Claim Number</label><input id="claim-num" value="001-00-629508"/></div>
-          <div class="fg"><label>Policy Number</label><input id="policy-num" value="11532067-3"/></div>
-          <div class="fg"><label>Type of Loss</label><input id="type-loss" value="Wind Damage"/></div>
-          <div class="fg"><label>Date of Loss</label><input id="date-loss" value="6/2/2025"/></div>
+          <div class="fg"><label>Type of Estimate</label><input id="type-loss" value="Wind Damage"/></div>
           <div class="fg"><label>Date Entered</label><input id="date-ent" value="4/8/2026"/></div>
-          <div class="fg"><label>Date Received</label><input id="date-rcvd" value=""/></div>
+          <div class="fg"><label>Date Assigned</label><input id="date-assigned" value=""/></div>
+          <div class="fg"><label>Date Est. Completed</label><input id="date-est-comp" value=""/></div>
+          <div class="fg"><label>Date Job Completed</label><input id="date-job-comp" value=""/></div>
           <div class="fg"><label>Price List Code</label><input id="pl-code" value="FLMI8X_APR26"/></div>
           <div class="fg"><label>Labor Efficiency</label><input id="pl-type" value="Restoration/Service/Remodel"/></div>
-          <div class="fg full"><label>Estimate Name</label><input id="est-name" value="PDUJOUR_TARP"/></div>
+          <div class="fg full"><label>Estimate Name (filename)</label><input id="est-name" value="PDUJOUR_TARP"/></div>
         </div>
       </div>
     </div>
 
+    <!-- PRICE LIST -->
     <div id="pg-pricelist" style="display:none">
-      <div class="ptitle">Price List</div><div class="psub">Reusable items and rates.</div>
+      <div class="ptitle">Price List</div>
+      <div class="psub">Reusable items — add to line items from here.</div>
       <div class="abar"><button class="btn bp" onclick="addPL()">+ Add Item</button></div>
-      <div class="twrap"><table class="ut"><thead><tr><th>Code</th><th>Description</th><th>Unit</th><th>Remove $</th><th>Replace $</th><th></th></tr></thead><tbody id="pl-body"></tbody></table></div>
+      <div class="twrap">
+        <table class="ut"><thead><tr><th>Code</th><th>Description</th><th>Unit</th><th>Remove $</th><th>Replace $</th><th></th></tr></thead>
+        <tbody id="pl-body"></tbody></table>
+      </div>
     </div>
 
+    <!-- ROOMS -->
+    <div id="pg-rooms" style="display:none">
+      <div class="ptitle">Rooms / Areas</div>
+      <div class="psub">Optional — group line items by room. Leave empty to put everything under Main Level.</div>
+      <div class="abar"><button class="btn bp" onclick="addRoom()">+ Add Room</button></div>
+      <div id="rooms-cont"></div>
+    </div>
+
+    <!-- LINE ITEMS -->
     <div id="pg-lineitems" style="display:none">
-      <div class="ptitle">Line Items</div><div class="psub">Build your estimate.</div>
+      <div class="ptitle">Line Items</div>
+      <div class="psub">Build the estimate. TAX is a percentage (e.g. 8.5 = 8.5%).</div>
       <div class="abar">
         <button class="btn bp" onclick="addLI()">+ Add Line Item</button>
-        <button class="btn bs" onclick="openModal()">📋 From Price List</button>
+        <button class="btn bs" onclick="openModal()">From Price List</button>
       </div>
-      <div class="card" style="padding:13px 17px">
-        <div class="lih"><span>#</span><span>Description</span><span>Qty/Unit</span><span>Remove</span><span>Replace</span><span>Tax</span><span>Total</span><span></span></div>
+      <div class="card" style="padding:10px 14px">
+        <div class="lih">
+          <span>#</span><span>Description</span><span>Room</span>
+          <span>Qty / Unit</span><span>Remove</span><span>Replace</span>
+          <span>Tax %</span><span>Total</span><span></span>
+        </div>
         <div id="li-cont"></div>
       </div>
       <div class="sbar">
@@ -163,29 +186,31 @@ table.ut tr:last-child td{border-bottom:none}
       </div>
     </div>
 
+    <!-- PHOTOS -->
     <div id="pg-photos" style="display:none">
-      <div class="ptitle">Photos</div><div class="psub">8 per page · 2 columns.</div>
+      <div class="ptitle">Photos</div>
+      <div class="psub">8 per page, 2 columns.</div>
       <div class="card">
-        <div class="pdrop" onclick="document.getElementById('ph-in').click()">📷 Click to upload photos<br/><small style="color:var(--tx3);display:block;margin-top:3px">JPG · PNG · WEBP</small></div>
+        <div class="pdrop" onclick="document.getElementById('ph-in').click()">Click to upload photos (JPG / PNG)</div>
         <input type="file" id="ph-in" multiple accept="image/*" style="display:none" onchange="loadPh(event)"/>
         <div class="pgui" id="ph-grid"></div>
       </div>
     </div>
 
+    <!-- GENERATE -->
     <div id="pg-generate" style="display:none">
-      <div class="ptitle">Generate PDF</div><div class="psub">Works on iPhone, Android, and desktop.</div>
+      <div class="ptitle">Generate PDF</div>
+      <div class="psub">Produces a pixel-perfect Xactimate-style estimate PDF.</div>
       <div class="gen-box">
-        <div class="gen-title">📄 Generate your estimate</div>
-        <div class="gen-sub">Click Generate — then tap the blue<br/><strong style="color:var(--tx)">Open PDF</strong> button to view and save it.</div>
+        <div class="gen-title">Ready to generate</div>
+        <div class="gen-sub">Click Generate, then tap <strong style="color:var(--tx)">Open PDF</strong> to view and save.</div>
         <div class="gen-btn-wrap">
-          <button class="big-btn" id="gen-btn" onclick="generatePDF()">⬇️ Generate PDF</button>
-          <!-- This <a> tag is what Safari on iPhone can actually open -->
-          <a id="pdf-link" class="pdf-link" target="_blank">📂 Open PDF</a>
+          <button class="big-btn" id="gen-btn" onclick="generatePDF()">Generate PDF</button>
+          <a id="pdf-link" class="pdf-link" target="_blank">Open PDF</a>
           <div class="status" id="gen-status"></div>
         </div>
         <div class="iphone-tip">
-          <strong>📱 On iPhone:</strong> Tap <em>Generate PDF</em>, then tap <em>Open PDF</em>.<br/>
-          In Safari, tap the <strong>Share button (□↑)</strong> → <strong>Save to Files</strong> to keep it.
+          <strong>On iPhone:</strong> Tap Generate, then Open PDF. In Safari tap <strong>Share</strong> then <strong>Save to Files</strong>.
         </div>
       </div>
     </div>
@@ -193,301 +218,636 @@ table.ut tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:999;align-items:center;justify-content:center;">
-  <div style="background:var(--surf);border:1px solid var(--bord);border-radius:11px;width:90%;max-width:540px;max-height:80vh;overflow:auto;padding:22px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+<!-- MODAL -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:999;align-items:center;justify-content:center">
+  <div style="background:var(--surf);border:1px solid var(--bord);border-radius:11px;width:90%;max-width:580px;max-height:80vh;overflow:auto;padding:22px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <div style="font-weight:600;font-size:15px">Add from Price List</div>
-      <button class="btn bs bsm" onclick="closeModal()">✕</button>
+      <button class="btn bs bsm" onclick="closeModal()">X</button>
     </div>
-    <div class="twrap"><table class="ut"><thead><tr><th>Description</th><th>Unit</th><th>Remove</th><th>Replace</th><th></th></tr></thead><tbody id="modal-body"></tbody></table></div>
+    <div class="twrap">
+      <table class="ut"><thead><tr><th>Description</th><th>Unit</th><th>Remove</th><th>Replace</th><th></th></tr></thead>
+      <tbody id="modal-body"></tbody></table>
+    </div>
   </div>
 </div>
 
 <script>
 const {jsPDF} = window.jspdf;
 
-let pl=[
-  {id:1,code:'TARP-REM',desc:'Remove Tarp - all-purpose poly - per sq ft (labor and material)',unit:'SF',rem:0.12,rep:0},
-  {id:2,code:'TARP-INS',desc:'Install Tarp - all-purpose poly - per sq ft (labor and material)',unit:'SF',rem:0,rep:1.50},
-  {id:3,code:'GEN-LAB',desc:'General Laborer - per hour',unit:'HR',rem:0,rep:55.06},
-  {id:4,code:'ROOF-TRK',desc:'Roof tarping - heavy duty poly - per sq ft',unit:'SF',rem:0,rep:2.10},
-  {id:5,code:'DEMO-DRY',desc:'Drywall - remove and dispose - per sq ft',unit:'SF',rem:0.55,rep:0},
-  {id:6,code:'INSUL-BAT',desc:'Insulation - batt type - per sq ft',unit:'SF',rem:0,rep:1.85},
-  {id:7,code:'PAINT-INT',desc:'Paint interior walls - per sq ft',unit:'SF',rem:0,rep:0.85},
-  {id:8,code:'FLOOR-TIL',desc:'Floor tile - remove and replace - per sq ft',unit:'SF',rem:0.45,rep:6.50},
-  {id:9,code:'WNDW-BRD',desc:'Board up window opening - per sq ft',unit:'SF',rem:0,rep:3.20},
-  {id:10,code:'CLEAN-GEN',desc:'General cleaning - per hour',unit:'HR',rem:0,rep:45.00},
+// ── Data ─────────────────────────────────────────────────────────────────────
+let pl = [
+  {id:1, code:'TARP-REM',  desc:'Remove Tarp - all-purpose poly - per sq ft (labor and material)', unit:'SF', rem:0.12, rep:0},
+  {id:2, code:'TARP-INS',  desc:'Install Tarp - all-purpose poly - per sq ft (labor and material)', unit:'SF', rem:0, rep:1.50},
+  {id:3, code:'GEN-LAB',   desc:'General Laborer - per hour', unit:'HR', rem:0, rep:55.06},
+  {id:4, code:'ROOF-TRK',  desc:'Roof tarping - heavy duty poly - per sq ft', unit:'SF', rem:0, rep:2.10},
+  {id:5, code:'DEMO-DRY',  desc:'Drywall - remove and dispose - per sq ft', unit:'SF', rem:0.55, rep:0},
+  {id:6, code:'INSUL-BAT', desc:'Insulation - batt type - per sq ft', unit:'SF', rem:0, rep:1.85},
+  {id:7, code:'PAINT-INT', desc:'Paint interior walls - per sq ft', unit:'SF', rem:0, rep:0.85},
+  {id:8, code:'FLOOR-TIL', desc:'Floor tile - remove and replace - per sq ft', unit:'SF', rem:0.45, rep:6.50},
+  {id:9, code:'WNDW-BRD',  desc:'Board up window opening - per sq ft', unit:'SF', rem:0, rep:3.20},
+  {id:10,code:'CLEAN-GEN', desc:'General cleaning - per hour', unit:'HR', rem:0, rep:45.00},
 ];
-let li=[
-  {id:1,desc:'Remove Tarp - all-purpose poly - per sq ft (labor and material)',qty:1500,unit:'SF',rem:0.12,rep:0,tax:0},
-  {id:2,desc:'Install Tarp - all-purpose poly - per sq ft (labor and material)',qty:1500,unit:'SF',rem:0,rep:1.50,tax:0},
-  {id:3,desc:'General Laborer - per hour',qty:3,unit:'HR',rem:0,rep:55.06,tax:0},
-  {id:4,desc:'Roof tarping - heavy duty poly - per sq ft',qty:500,unit:'SF',rem:0,rep:2.10,tax:0},
-  {id:5,desc:'Drywall - remove and dispose - per sq ft',qty:200,unit:'SF',rem:0.55,rep:0,tax:0},
-  {id:6,desc:'Insulation - batt type - per sq ft',qty:150,unit:'SF',rem:0,rep:1.85,tax:0},
-  {id:7,desc:'Paint interior walls - per sq ft',qty:400,unit:'SF',rem:0,rep:0.85,tax:0},
-  {id:8,desc:'Floor tile - remove and replace - per sq ft',qty:80,unit:'SF',rem:0.45,rep:6.50,tax:0},
-  {id:9,desc:'Board up window opening - per sq ft',qty:32,unit:'SF',rem:0,rep:3.20,tax:0},
-  {id:10,desc:'General cleaning - per hour',qty:4,unit:'HR',rem:0,rep:45.00,tax:0},
+let li = [
+  {id:1,  room:'', desc:'Remove Tarp - all-purpose poly - per sq ft (labor and material)', qty:1500, unit:'SF', rem:0.12, rep:0,    tax:0},
+  {id:2,  room:'', desc:'Install Tarp - all-purpose poly - per sq ft (labor and material)', qty:1500, unit:'SF', rem:0,    rep:1.50, tax:0},
+  {id:3,  room:'', desc:'General Laborer - per hour',                                      qty:3,    unit:'HR', rem:0,    rep:55.06,tax:0},
+  {id:4,  room:'', desc:'Roof tarping - heavy duty poly - per sq ft',                      qty:500,  unit:'SF', rem:0,    rep:2.10, tax:0},
+  {id:5,  room:'', desc:'Drywall - remove and dispose - per sq ft',                        qty:200,  unit:'SF', rem:0.55, rep:0,    tax:0},
+  {id:6,  room:'', desc:'Insulation - batt type - per sq ft',                              qty:150,  unit:'SF', rem:0,    rep:1.85, tax:0},
+  {id:7,  room:'', desc:'Paint interior walls - per sq ft',                                qty:400,  unit:'SF', rem:0,    rep:0.85, tax:0},
+  {id:8,  room:'', desc:'Floor tile - remove and replace - per sq ft',                     qty:80,   unit:'SF', rem:0.45, rep:6.50, tax:0},
+  {id:9,  room:'', desc:'Board up window opening - per sq ft',                             qty:32,   unit:'SF', rem:0,    rep:3.20, tax:0},
+  {id:10, room:'', desc:'General cleaning - per hour',                                     qty:4,    unit:'HR', rem:0,    rep:45.00,tax:0},
 ];
-let photos=[];
-let plC=20,liC=20;
-let pdfBlobUrl=null;
+let rooms = [];
+let photos = [];
+let logoB64 = null;
+let plC=20, liC=20, roomC=0;
+let pdfBlobUrl = null;
 
-const g=id=>document.getElementById(id).value.trim();
-const $=id=>document.getElementById(id);
-const f2=n=>(+n).toFixed(2);
-const fm=n=>'$'+f2(n);
-const calc=item=>(item.qty*item.rem)+(item.qty*item.rep);
-const fq=(q,u)=>(+q).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' '+u;
+const g   = id => document.getElementById(id).value.trim();
+const $   = id => document.getElementById(id);
+const f2  = n  => (+n).toFixed(2);
+const fm  = n  => '$' + f2(n);
+const fq  = (q,u) => (+q).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' ' + u;
+const esc = s  => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const calcItem = item => (item.qty * item.rem) + (item.qty * item.rep) + (item.qty * item.rep * item.tax / 100);
 
-function nav(name,btn){
-  ['company','claim','pricelist','lineitems','photos','generate'].forEach(p=>
-    $('pg-'+p).style.display=p===name?'':'none');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+// ── Navigation ───────────────────────────────────────────────────────────────
+function nav(name, btn){
+  ['company','claim','pricelist','rooms','lineitems','photos','generate']
+    .forEach(p => $('pg-'+p).style.display = p===name ? '' : 'none');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  if(name==='pricelist')renderPL();
-  if(name==='lineitems')renderLI();
-  if(name==='photos')renderPhUI();
-  if(name==='generate'){$('pdf-link').style.display='none';$('gen-status').textContent='';}
+  if(name==='pricelist') renderPL();
+  if(name==='rooms')     renderRooms();
+  if(name==='lineitems') renderLI();
+  if(name==='photos')    renderPhUI();
+  if(name==='generate'){ $('pdf-link').style.display='none'; $('gen-status').textContent=''; }
 }
 
+// ── Logo ─────────────────────────────────────────────────────────────────────
+function loadLogo(e){
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    logoB64 = ev.target.result;
+    $('logo-prev').innerHTML = `<img src="${logoB64}" style="max-height:55px;border-radius:4px;border:1px solid var(--bord)"/>`;
+  };
+  r.readAsDataURL(f);
+}
+
+// ── Price List ───────────────────────────────────────────────────────────────
 function renderPL(){
-  $('pl-body').innerHTML=pl.map(p=>`<tr>
-    <td><input class="tdi" style="width:86px" value="${p.code}" onchange="upPL(${p.id},'code',this.value)"/></td>
-    <td><input class="tdi" style="width:100%" value="${p.desc}" onchange="upPL(${p.id},'desc',this.value)"/></td>
-    <td><input class="tdi" style="width:42px" value="${p.unit}" onchange="upPL(${p.id},'unit',this.value)"/></td>
+  $('pl-body').innerHTML = pl.map(p => `<tr>
+    <td><input class="tdi" style="width:88px" value="${esc(p.code)}" onchange="upPL(${p.id},'code',this.value)"/></td>
+    <td><input class="tdi" style="width:100%" value="${esc(p.desc)}" onchange="upPL(${p.id},'desc',this.value)"/></td>
+    <td><input class="tdi" style="width:40px" value="${p.unit}" onchange="upPL(${p.id},'unit',this.value)"/></td>
     <td><input class="tdi" style="width:68px" type="number" step="0.01" value="${p.rem}" onchange="upPL(${p.id},'rem',+this.value)"/></td>
     <td><input class="tdi" style="width:68px" type="number" step="0.01" value="${p.rep}" onchange="upPL(${p.id},'rep',+this.value)"/></td>
-    <td><button class="btn bd bsm" onclick="delPL(${p.id})">✕</button></td>
+    <td><button class="btn bd bsm" onclick="delPL(${p.id})">X</button></td>
   </tr>`).join('');
 }
-function upPL(id,f,v){const i=pl.find(x=>x.id===id);if(i)i[f]=v;}
-function delPL(id){pl=pl.filter(x=>x.id!==id);renderPL();}
-function addPL(){plC++;pl.push({id:plC,code:'NEW-'+plC,desc:'New item',unit:'SF',rem:0,rep:0});renderPL();}
+function upPL(id,f,v){ const i=pl.find(x=>x.id===id); if(i) i[f]=v; }
+function delPL(id){ pl=pl.filter(x=>x.id!==id); renderPL(); }
+function addPL(){ plC++; pl.push({id:plC,code:'NEW-'+plC,desc:'New item',unit:'SF',rem:0,rep:0}); renderPL(); }
 
+// ── Rooms ────────────────────────────────────────────────────────────────────
+function addRoom(){ roomC++; rooms.push({id:roomC, name:'Room '+roomC}); renderRooms(); }
+function renderRooms(){
+  $('rooms-cont').innerHTML = rooms.length===0
+    ? '<div style="color:var(--tx3);font-size:13px;padding:8px 0">No rooms — all items go under Main Level.</div>'
+    : rooms.map(r=>`<div class="room-card">
+        <input class="tdi" style="flex:1;font-size:13px" value="${esc(r.name)}" onchange="upRoom(${r.id},this.value)" placeholder="Room name"/>
+        <button class="btn bd bsm" onclick="delRoom(${r.id})">Remove</button>
+      </div>`).join('');
+}
+function upRoom(id,v){ const r=rooms.find(x=>x.id===id); if(r) r.name=v; }
+function delRoom(id){ rooms=rooms.filter(x=>x.id!==id); renderRooms(); }
+
+// ── Line Items ───────────────────────────────────────────────────────────────
+function roomOpts(sel){
+  return `<option value="">Main Level</option>` +
+    rooms.map(r=>`<option value="${r.id}" ${String(sel)===String(r.id)?'selected':''}>${esc(r.name)}</option>`).join('');
+}
 function renderLI(){
-  $('li-cont').innerHTML=li.map((item,i)=>`
-    <div class="lig">
+  $('li-cont').innerHTML = li.map((item,i) => `
+    <div class="lirow">
       <div class="lnum">${i+1}</div>
-      <input class="tdi" style="width:100%" value="${item.desc}" onchange="upLI(${item.id},'desc',this.value)"/>
+      <input class="tdi" style="width:100%" value="${esc(item.desc)}" onchange="upLI(${item.id},'desc',this.value)"/>
+      <select class="tdi" style="padding:3px 4px;font-size:11px" onchange="upLI(${item.id},'room',this.value)">${roomOpts(item.room)}</select>
       <div style="display:flex;gap:3px">
-        <input class="tdi" style="width:48px" type="number" step="0.01" value="${item.qty}" onchange="upLI(${item.id},'qty',+this.value)"/>
+        <input class="tdi" style="width:52px" type="number" step="0.01" value="${item.qty}" onchange="upLI(${item.id},'qty',+this.value)"/>
         <input class="tdi" style="width:32px" value="${item.unit}" onchange="upLI(${item.id},'unit',this.value)"/>
       </div>
-      <input class="tdi" style="width:78px" type="number" step="0.01" value="${item.rem}" onchange="upLI(${item.id},'rem',+this.value)"/>
-      <input class="tdi" style="width:78px" type="number" step="0.01" value="${item.rep}" onchange="upLI(${item.id},'rep',+this.value)"/>
-      <input class="tdi" style="width:44px" type="number" step="0.01" value="${item.tax}" onchange="upLI(${item.id},'tax',+this.value)"/>
-      <div class="tdis">${fm(calc(item))}</div>
-      <button class="btn bd" style="padding:4px 7px" onclick="delLI(${item.id})">✕</button>
+      <input class="tdi" type="number" step="0.01" value="${item.rem}" onchange="upLI(${item.id},'rem',+this.value)"/>
+      <input class="tdi" type="number" step="0.01" value="${item.rep}" onchange="upLI(${item.id},'rep',+this.value)"/>
+      <input class="tdi" type="number" step="0.01" value="${item.tax}" onchange="upLI(${item.id},'tax',+this.value)" title="Tax %"/>
+      <div class="tdis">${fm(calcItem(item))}</div>
+      <button class="btn bd" style="padding:3px 6px;font-size:11px" onclick="delLI(${item.id})">X</button>
     </div>`).join('');
-  const tot=li.reduce((s,i)=>s+calc(i),0);
-  $('s-tot').textContent=fm(tot);$('s-rcv').textContent=fm(tot);$('s-net').textContent=fm(tot);
+  const tot = li.reduce((s,i)=>s+calcItem(i),0);
+  $('s-tot').textContent=fm(tot); $('s-rcv').textContent=fm(tot); $('s-net').textContent=fm(tot);
 }
-function upLI(id,f,v){const i=li.find(x=>x.id===id);if(i){i[f]=v;renderLI();}}
-function delLI(id){li=li.filter(x=>x.id!==id);renderLI();}
-function addLI(){liC++;li.push({id:liC,desc:'New line item',qty:1,unit:'SF',rem:0,rep:0,tax:0});renderLI();}
+function upLI(id,f,v){ const i=li.find(x=>x.id===id); if(i){i[f]=v; renderLI();} }
+function delLI(id){ li=li.filter(x=>x.id!==id); renderLI(); }
+function addLI(){ liC++; li.push({id:liC,room:'',desc:'New line item',qty:1,unit:'SF',rem:0,rep:0,tax:0}); renderLI(); }
+
 function openModal(){
   $('modal').style.display='flex';
-  $('modal-body').innerHTML=pl.map(p=>`<tr>
-    <td>${p.desc}</td><td>${p.unit}</td><td>${f2(p.rem)}</td><td>${f2(p.rep)}</td>
+  $('modal-body').innerHTML = pl.map(p=>`<tr>
+    <td>${esc(p.desc)}</td><td>${p.unit}</td><td>${f2(p.rem)}</td><td>${f2(p.rep)}</td>
     <td><button class="btn bp bsm" onclick="pickPL(${p.id})">Add</button></td>
   </tr>`).join('');
 }
-function closeModal(){$('modal').style.display='none';}
+function closeModal(){ $('modal').style.display='none'; }
 function pickPL(id){
-  const p=pl.find(x=>x.id===id);if(!p)return;
-  liC++;li.push({id:liC,desc:p.desc,qty:1,unit:p.unit,rem:p.rem,rep:p.rep,tax:0});
-  closeModal();renderLI();
+  const p=pl.find(x=>x.id===id); if(!p) return;
+  liC++; li.push({id:liC,room:'',desc:p.desc,qty:1,unit:p.unit,rem:p.rem,rep:p.rep,tax:0});
+  closeModal(); renderLI();
 }
-function loadPh(e){Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{photos.push({src:ev.target.result});renderPhUI();};r.readAsDataURL(f);});}
-function renderPhUI(){$('ph-grid').innerHTML=photos.map((p,i)=>`<div class="pth"><img src="${p.src}"/><button class="pdel" onclick="delPh(${i})">✕</button></div>`).join('');}
-function delPh(i){photos.splice(i,1);renderPhUI();}
 
-// ══════════════════════════════════════
-// PDF GENERATION
-// ══════════════════════════════════════
+// ── Photos ───────────────────────────────────────────────────────────────────
+function loadPh(e){ Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{photos.push({src:ev.target.result});renderPhUI();};r.readAsDataURL(f);}); }
+function renderPhUI(){ $('ph-grid').innerHTML=photos.map((p,i)=>`<div class="pth"><img src="${p.src}"/><button class="pdel" onclick="delPh(${i})">X</button></div>`).join(''); }
+function delPh(i){ photos.splice(i,1); renderPhUI(); }
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  PDF GENERATION
+//  Coordinate system: jsPDF pt, origin TOP-LEFT, y increases DOWNWARD
+//  Letter = 612 × 792 pt
+// ══════════════════════════════════════════════════════════════════════════════
 async function generatePDF(){
   const btn=$('gen-btn'), status=$('gen-status'), link=$('pdf-link');
-  btn.disabled=true;
-  btn.innerHTML='<span class="spin"></span> Building...';
-  status.textContent=''; status.className='status';
-  link.style.display='none';
-
-  // Revoke old blob URL to free memory
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Building...';
+  status.textContent=''; status.className='status'; link.style.display='none';
   if(pdfBlobUrl){ URL.revokeObjectURL(pdfBlobUrl); pdfBlobUrl=null; }
 
   try {
     const doc = new jsPDF({unit:'pt', format:'letter'});
     const PW=612, PH=792;
-    const en=g('est-name'), de=g('date-ent');
-    const total=li.reduce((s,i)=>s+calc(i),0);
 
-    const TR=sz=>{doc.setFont('times','normal');doc.setFontSize(sz);doc.setTextColor(0,0,0);}
-    const TB=sz=>{doc.setFont('times','bold');doc.setFontSize(sz);doc.setTextColor(0,0,0);}
-    const t=(txt,x,y,a='left')=>doc.text(String(txt),x,y,{align:a});
-    const ln=(x1,y1,x2,y2,w=0.5,gray=0)=>{doc.setLineWidth(w);doc.setDrawColor(gray,gray,gray);doc.line(x1,y1,x2,y2);}
-    const fr=(x,y,w,h,r,gg,b)=>{doc.setFillColor(r,gg,b);doc.rect(x,y,w,h,'F');}
+    // Margin
+    const ML=54, MR=558; // left/right content edges
 
-    let pageNum=0;
+    // Values from fields
+    const en        = g('est-name');
+    const coName    = g('co-name');
+    const coEmail   = g('co-email');
+    const coAddr    = g('co-addr');
+    const coCity    = g('co-city');
+    const insured   = g('insured');
+    const propAddr  = g('prop-addr');
+    const propCity  = g('prop-city');
+    const operator  = g('operator');
+    const estimator = g('estimator');
+    const typeLoss  = g('type-loss');
+    const dateEnt   = g('date-ent');
+    const dateAssn  = g('date-assigned');
+    const dateEstC  = g('date-est-comp');
+    const dateJobC  = g('date-job-comp');
+    const plCode    = g('pl-code');
+    const plType    = g('pl-type');
+    const total     = li.reduce((s,i)=>s+calcItem(i), 0);
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    // All y values are from TOP of page
+    function setFont(style, size, r=0,gg=0,b=0){
+      doc.setFont('times', style);
+      doc.setFontSize(size);
+      doc.setTextColor(r,gg,b);
+    }
+    function txt(str, x, y, align='left'){
+      doc.text(String(str), x, y, {align});
+    }
+    function hline(y, x1=ML, x2=MR, w=0.5, gray=0){
+      doc.setLineWidth(w);
+      doc.setDrawColor(gray,gray,gray);
+      doc.line(x1, y, x2, y);
+    }
+    function fillRect(x, y, w, h, r, gg, b){
+      doc.setFillColor(r,gg,b);
+      doc.rect(x, y, w, h, 'F');
+    }
+
+    let pageNum = 0;
+
+    // ── Page header ───────────────────────────────────────────────────────────
+    // Header occupies y=18..75 (top 75pt)
+    // Logo/box: x=36, y=20, w=50, h=40
+    // Company name: bold, y=40
+    // Horizontal rule: y=75
+    // Email: y=88
+    const HDR_BOTTOM = 90; // content starts below this
 
     function drawHeader(){
-      fr(36,18,54,54,31,78,31);
-      doc.setFont('times','bold'); doc.setFontSize(18); doc.setTextColor(255,255,255);
-      t('NR',44,51); doc.setTextColor(0,0,0);
-      TB(12); t(g('co-name'),103.5,56.9);
-      ln(36,72,PW-18,72,0.75,0);
-      TR(9); t(g('co-email'),103.5,69);
+      if(logoB64){
+        try{ doc.addImage(logoB64, 'PNG', 36, 20, 50, 40); }catch(e){}
+      } else {
+        // Green NR box
+        fillRect(36, 20, 50, 40, 31, 78, 31);
+        setFont('bold', 20, 255,255,255);
+        txt('NR', 61, 47, 'center');
+      }
+      // Company name — bold, right of logo
+      setFont('bold', 13, 0,0,0);
+      txt(coName, 100, 40);
+      // Horizontal rule
+      hline(60, 36, MR+18, 0.8);
+      // Email below rule
+      setFont('normal', 9, 0,0,0);
+      txt(coEmail, 100, 73);
     }
 
+    // ── Page footer ───────────────────────────────────────────────────────────
+    // Rule at y=748, text at y=762
     function drawFooter(n){
-      ln(18,731,PW-18,731,0.5,0.6);
-      TR(10);
-      t(en,27,742.6);
-      t(de,PW/2,742.6,'center');
-      t('Page: '+n,PW-18,742.6,'right');
+      hline(748, 18, MR+18, 0.5, 160);
+      setFont('normal', 10, 0,0,0);
+      txt(en,      27,    762);
+      txt(dateEnt, PW/2,  762, 'center');
+      txt('Page: '+n, MR+18, 762, 'right');
     }
 
-    // ── PAGE 1 ──
+    // ════════════════════════════════════════════════════════════════════════
+    // PAGE 1 — Cover page
+    // ════════════════════════════════════════════════════════════════════════
     pageNum++;
     drawHeader();
-    const LR=111,VX=127,RLR=420,RVX=432;
-    let ry=669.8;
-    const RS=13.3;
-    function row(lbl,val,rl='',rv=''){
-      TB(10);t(lbl,LR,ry,'right');TR(10);t(val,VX,ry);
-      if(rl){TB(10);t(rl,RLR,ry,'right');}
-      if(rv){TR(10);t(rv,RVX,ry);}
-      ry-=RS;
+
+    // Layout: two columns of label:value pairs
+    // Left column  — label right-aligned to x=160, value starts at x=168
+    // Right column — label right-aligned to x=390, value starts at x=398
+    //
+    // Measured from real Xactimate PDF (letter, pt):
+    // First row starts at y≈160 (below header area)
+
+    const LBL_R  = 160;  // left labels right-align here
+    const VAL_L  = 168;  // left values start here
+    const LBL2_R = 390;  // right labels right-align here
+    const VAL2_L = 398;  // right values start here
+
+    let cy = 160;       // current y (top of text baseline)
+    const ROW = 16;     // row height
+
+    function coverRow(lbl, val, lbl2='', val2=''){
+      setFont('normal', 10, 0,0,0);
+      txt(lbl,  LBL_R, cy, 'right');
+      txt(val,  VAL_L, cy);
+      if(lbl2){ txt(lbl2, LBL2_R, cy, 'right'); }
+      if(val2){ txt(val2, VAL2_L, cy); }
+      cy += ROW;
     }
-    row('Client:',g('insured'));
-    row('Property:',g('prop-addr'));
-    TR(10);t(g('prop-city'),VX,ry);ry-=RS+4;
-    row('Operator:','ADMIN');
-    ry-=4;
-    row('Estimator:',g('estimator'),'E-mail:',g('co-email'));
-    row('Business:',g('co-addr'));
-    TR(10);t(g('co-city'),VX,ry);ry-=RS+4;
-    row('Type of Estimate:',g('type-loss'));
-    row('Date Entered:',g('date-ent'),'Date Assigned:','');
-    row('Date Est. Completed:','','Date Job Completed:',g('date-rcvd'));
-    ry-=4;
-    row('Price List:',g('pl-code'));
-    row('Labor Efficiency:',g('pl-type'));
-    row('Estimate:',en);
+
+    // Client + Property (no right column)
+    coverRow('Client:',   insured);
+    coverRow('Property:', propAddr);
+    txt(propCity, VAL_L, cy); cy += ROW;
+    cy += 4; // gap
+
+    // Operator
+    coverRow('Operator:', operator);
+    cy += 4;
+
+    // Estimator + E-mail on same row
+    setFont('normal',10,0,0,0);
+    txt('Estimator:', LBL_R, cy, 'right');
+    txt(estimator,   VAL_L,  cy);
+    txt('E-mail:',   LBL2_R, cy, 'right');
+    txt(coEmail,     VAL2_L, cy);
+    cy += ROW;
+
+    // Business address
+    coverRow('Business:', coAddr);
+    txt(coCity, VAL_L, cy); cy += ROW;
+    cy += 4;
+
+    // Type of Estimate
+    coverRow('Type of Estimate:', typeLoss);
+
+    // Date rows — two columns
+    coverRow('Date Entered:', dateEnt, 'Date Assigned:', dateAssn);
+    coverRow('Date Est. Completed:', dateEstC, 'Date Job Completed:', dateJobC);
+    cy += 4;
+
+    // Price list block
+    coverRow('Price List:',       plCode);
+    coverRow('Labor Efficiency:', plType);
+    coverRow('Estimate:',         en);
+
     drawFooter(pageNum);
 
-    // ── PAGE 2 — Line Items ──
-    doc.addPage(); pageNum++;
-    drawHeader();
-    TB(10);t(en,PW/2,665,'center');
-    TR(10);t(g('insured'),PW/2,647.9,'center');
-    TB(10);t('Main Level',PW/2,630.8,'center');
-    TB(10);t('Main Level',36,617.3);
+    // ════════════════════════════════════════════════════════════════════════
+    // PAGE 2+ — Line Items
+    // ════════════════════════════════════════════════════════════════════════
+    // Column x positions (right-edge of each column, values right-aligned):
+    //   DESCRIPTION: left-starts at DESC_L, wraps within DESC_W
+    //   QTY, REMOVE, REPLACE, TAX, TOTAL: right-aligned at their _R values
+    //
+    // Real Xactimate column proportions on 612pt letter:
+    //   Left margin 54, right margin 558 → usable 504pt
+    //   Description ~220pt, then 5 cols × ~57pt each
 
-    const C={dL:36,qR:256,mR:325,pR:409,xR:492,tR:576};
-    const HDR=595.8;
+    const DESC_L = 54;   // description text left edge
+    const DESC_W = 200;  // description wrap width (stays clear of QTY col)
+    const QTY_R  = 318;  // QTY right-align  (number + unit, e.g. "1,500.00 SF")
+    const REM_R  = 382;  // REMOVE right-align
+    const REP_R  = 446;  // REPLACE right-align
+    const TAX_R  = 502;  // TAX right-align
+    const TOT_R  = 558;  // TOTAL right-align
 
-    function tblHdr(y){
-      fr(36,y-10,PW-54,14,242,242,242);
-      ln(36,y-10,PW-18,y-10,0.6,0.53);
-      ln(36,y+4,PW-18,y+4,0.6,0.53);
-      TB(9);
-      t('DESCRIPTION',C.dL+2,y);t('QTY',C.qR,y,'right');
-      t('REMOVE',C.mR,y,'right');t('REPLACE',C.pR,y,'right');
-      t('TAX',C.xR,y,'right');t('TOTAL',C.tR,y,'right');
+    // Page vertical zones
+    const CONTENT_TOP = HDR_BOTTOM + 8; // first content y on any page
+    const FOOTER_Y    = 738;            // items must not cross this line
+
+    // ── Column header bar (drawn once per section, or after page break) ──────
+    function drawColHeader(y){
+      fillRect(ML-2, y, MR-ML+22, 14, 238,238,238);
+      hline(y,    ML-2, MR+20, 0.5, 150);
+      hline(y+14, ML-2, MR+20, 0.5, 150);
+      setFont('bold', 9, 0,0,0);
+      txt('DESCRIPTION', DESC_L,  y+10);
+      txt('QTY',         QTY_R,   y+10, 'right');
+      txt('REMOVE',      REM_R,   y+10, 'right');
+      txt('REPLACE',     REP_R,   y+10, 'right');
+      txt('TAX',         TAX_R,   y+10, 'right');
+      txt('TOTAL',       TOT_R,   y+10, 'right');
     }
-    tblHdr(HDR);
-    let dy=HDR-18;
-    TR(9);
-    li.forEach(item=>{
-      const tot=calc(item);
-      const lines=doc.splitTextToSize(item.desc,C.qR-C.dL-10);
-      const needed=lines.length*11+4;
-      if(dy-needed<85){
-        drawFooter(pageNum);doc.addPage();pageNum++;
-        drawHeader();tblHdr(HDR);dy=HDR-18;TR(9);
-      }
-      lines.forEach((ln2,i2)=>t(ln2,C.dL+2,dy-i2*11));
-      t(fq(item.qty,item.unit),C.qR,dy,'right');
-      t(f2(item.rem),C.mR,dy,'right');
-      t(f2(item.rep),C.pR,dy,'right');
-      t(f2(item.tax),C.xR,dy,'right');
-      t(f2(tot),C.tR,dy,'right');
-      dy-=needed;
-      ln(36,dy+6,PW-18,dy+6,0.3,0.8);
-      dy-=4;
+
+    // ── Build room groups ─────────────────────────────────────────────────────
+    const roomGroups = [];
+    const mainItems = li.filter(i => !i.room || i.room==='');
+    roomGroups.push({name:'Main Level', items: mainItems});
+    rooms.forEach(rm => {
+      const rmItems = li.filter(i => String(i.room) === String(rm.id));
+      if(rmItems.length > 0) roomGroups.push({name:rm.name, items:rmItems});
     });
-    // total rows
-    dy-=2; ln(36,dy+8,PW-18,dy+8,0.8,0.4); dy-=2;
-    TR(9);t('Total:  Main Level',C.dL+2,dy);t(f2(0),C.xR,dy,'right');t(f2(total),C.tR,dy,'right');
-    dy-=14; ln(36,dy+8,PW-18,dy+8,0.8,0.4);
-    TB(9);t('Total: '+g('insured'),C.dL+2,dy);t(f2(0),C.xR,dy,'right');t(f2(total),C.tR,dy,'right');
-    dy-=14; ln(36,dy+8,PW-18,dy+8,0.8,0.4);
-    TB(9);t('Line Item Totals: '+en,C.dL+2,dy);t(f2(0),C.xR,dy,'right');t(f2(total),C.tR,dy,'right');
-    dy-=4; ln(36,dy+8,PW-18,dy+8,1,0);
-    drawFooter(pageNum);
 
-    // ── PAGE 3 — Summary ──
-    doc.addPage(); pageNum++;
+    // ── y = vertical cursor from TOP of page, increases downward ─────────────
+    let y = 0;
+
+    // ── Open the first line-items page ───────────────────────────────────────
+    doc.addPage();
+    pageNum++;
     drawHeader();
-    TB(12);t('Summary',PW/2,636,'center');
-    TR(10);t('Line Item Total',36,620);t(f2(total),PW-18,620,'right');
-    ln(36,615,PW-18,615,0.5,0.7);
-    TB(10);t('Replacement Cost Value',36,599.1);t(fm(total),PW-18,599.1,'right');
-    ln(36,594,PW-18,594,1.2,0);
-    TB(10);t('Net Claim',36,585.2);t(fm(total),PW-18,585.2,'right');
-    ln(36,580,PW-18,580,1.2,0);
-    ln(36,578,PW-18,578,0.5,0);
-    ln(215,532,390,532,0.7,0);
-    TR(10);t(g('co-name'),216,523.4);
-    drawFooter(pageNum);
+    y = CONTENT_TOP;
 
-    // ── PAGE 4 — Recap of Taxes ──
-    doc.addPage(); pageNum++;
-    drawHeader();
-    TB(12);t('Recap of Taxes',PW/2,636,'center');
-    drawFooter(pageNum);
+    // Centred title block
+    setFont('bold', 10, 0,0,0);
+    txt(en,      PW/2, y+12, 'center');
+    txt(insured, PW/2, y+26, 'center');
+    txt('Main Level', PW/2, y+40, 'center');
+    y += 56;
 
-    // ── PHOTO PAGES ──
-    if(photos.length>0){
-      const iW=(PW-72)/2,iH=185;
-      for(let i=0;i<photos.length;i+=8){
-        doc.addPage();pageNum++;drawHeader();
-        const chunk=photos.slice(i,i+8);
-        for(let j=0;j<chunk.length;j++){
-          const col=j%2,row2=Math.floor(j/2);
-          const ix=36+(col*(iW+18)),iy=90+(row2*(iH+22));
-          TB(9);t(String(i+j+1),ix,iy+8);
-          try{doc.addImage(chunk[j].src,'JPEG',ix,iy+11,iW,iH-11);}catch(e){}
+    let globalItemNum = 1;
+
+    roomGroups.forEach(grp => {
+      if(grp.items.length === 0) return;
+
+      // Need space for: section label(14) + col-header(18) + at least one item(~30)
+      // If not enough room, start a new page — then draw label+colhdr fresh
+      if(y + 62 > FOOTER_Y){
+        drawFooter(pageNum);
+        doc.addPage(); pageNum++;
+        drawHeader();
+        y = CONTENT_TOP;
+      }
+
+      // Section label (bold)
+      setFont('bold', 9, 0,0,0);
+      txt(grp.name, DESC_L, y+10);
+      y += 14;
+
+      // Column header bar for this section
+      drawColHeader(y);
+      y += 18;
+
+      let sectionTotal = 0;
+
+      grp.items.forEach(item => {
+        const tot   = calcItem(item);
+        sectionTotal += tot;
+
+        const lines = doc.splitTextToSize(item.desc, DESC_W);
+        const rowH  = lines.length * 12 + 8; // 12pt/line + 8 padding
+
+        // If this item doesn't fit, break to new page and re-draw col-header
+        if(y + rowH > FOOTER_Y){
+          drawFooter(pageNum);
+          doc.addPage(); pageNum++;
+          drawHeader();
+          y = CONTENT_TOP;
+          drawColHeader(y);
+          y += 18;
+          setFont('normal', 9, 0,0,0);
         }
+
+        // Item number — gray
+        setFont('normal', 9, 130,130,130);
+        txt(globalItemNum+'.', DESC_L - 2, y+10);
+        globalItemNum++;
+
+        // Description text — black, indented slightly past item number
+        setFont('normal', 9, 0,0,0);
+        lines.forEach((line, li2) => txt(line, DESC_L+13, y+10+(li2*12)));
+
+        // Numbers on first line's baseline
+        const by = y + 10;
+        txt(fq(item.qty, item.unit), QTY_R, by, 'right');
+        txt(f2(item.rem),            REM_R, by, 'right');
+        txt(f2(item.rep),            REP_R, by, 'right');
+        txt(f2(item.tax>0 ? item.qty*item.rep*item.tax/100 : 0), TAX_R, by, 'right');
+        txt(f2(tot),                 TOT_R, by, 'right');
+
+        y += rowH;
+
+        // Thin separator line
+        doc.setLineWidth(0.25); doc.setDrawColor(210,210,210);
+        doc.line(ML-2, y, MR+20, y);
+        y += 3;
+      });
+
+      // Section totals row
+      if(y + 22 > FOOTER_Y){
+        drawFooter(pageNum);
+        doc.addPage(); pageNum++;
+        drawHeader();
+        y = CONTENT_TOP;
+      }
+      y += 2;
+      hline(y, ML-2, MR+20, 0.6, 0);
+      y += 4;
+      setFont('normal', 9, 0,0,0);
+      txt('Totals:  '+grp.name, DESC_L, y+8);
+      txt(f2(0),            TAX_R, y+8, 'right');
+      txt(f2(sectionTotal), TOT_R, y+8, 'right');
+      y += 20;
+    });
+
+    // ── Grand total block ─────────────────────────────────────────────────────
+    // Needs ~60pt — check and break if needed
+    if(y + 60 > FOOTER_Y){
+      drawFooter(pageNum);
+      doc.addPage(); pageNum++;
+      drawHeader();
+      y = CONTENT_TOP;
+    }
+
+    y += 4;
+    hline(y, ML-2, MR+20, 0.8, 0); y += 2;
+    setFont('normal', 9, 0,0,0);
+    txt('Total:  Main Level', DESC_L, y+9);
+    txt(f2(0),     TAX_R, y+9, 'right');
+    txt(f2(total), TOT_R, y+9, 'right');
+    y += 20;
+
+    hline(y, ML-2, MR+20, 0.8, 0); y += 2;
+    setFont('bold', 9, 0,0,0);
+    txt('Total: '+insured, DESC_L, y+9);
+    txt(f2(0),     TAX_R, y+9, 'right');
+    txt(f2(total), TOT_R, y+9, 'right');
+    y += 20;
+
+    hline(y, ML-2, MR+20, 0.8, 0); y += 2;
+    setFont('bold', 9, 0,0,0);
+    txt('Line Item Totals: '+en, DESC_L, y+9);
+    txt(f2(0),     TAX_R, y+9, 'right');
+    txt(f2(total), TOT_R, y+9, 'right');
+    y += 14;
+    hline(y,   ML-2, MR+20, 1.2, 0);
+    hline(y+3, ML-2, MR+20, 0.4, 0);
+
+    drawFooter(pageNum);
+
+    // ════════════════════════════════════════════════════════════════════════
+    // PAGE — Summary
+    // ════════════════════════════════════════════════════════════════════════
+    doc.addPage(); pageNum++;
+    drawHeader();
+
+    setFont('bold', 12, 0,0,0);
+    txt('Summary', PW/2, 170, 'center');
+
+    let sy = 200;
+    const SL = ML, SR = MR+18;
+
+    setFont('normal', 10, 0,0,0);
+    txt('Line Item Total', SL, sy);
+    txt(f2(total), SR, sy, 'right');
+    sy += 4;
+    hline(sy, SL, SR, 0.4, 180);
+    sy += 18;
+
+    setFont('bold', 10, 0,0,0);
+    txt('Replacement Cost Value', SL, sy);
+    txt(fm(total), SR, sy, 'right');
+    sy += 2;
+    hline(sy, SL, SR, 1.2, 0);
+    sy += 14;
+
+    setFont('bold', 10, 0,0,0);
+    txt('Net Claim', SL, sy);
+    txt(fm(total), SR, sy, 'right');
+    sy += 2;
+    hline(sy, SL, SR, 1.2, 0);
+    hline(sy+2, SL, SR, 0.4, 0);
+
+    // Signature line
+    hline(sy+80, 200, 420, 0.7, 0);
+    setFont('normal', 10, 0,0,0);
+    txt(coName, 202, sy+94);
+
+    drawFooter(pageNum);
+
+    // ════════════════════════════════════════════════════════════════════════
+    // PAGE — Recap of Taxes (blank)
+    // ════════════════════════════════════════════════════════════════════════
+    doc.addPage(); pageNum++;
+    drawHeader();
+    setFont('bold', 12, 0,0,0);
+    txt('Recap of Taxes', PW/2, 170, 'center');
+    drawFooter(pageNum);
+
+    // ════════════════════════════════════════════════════════════════════════
+    // PAGE — Recap by Room (if rooms used)
+    // ════════════════════════════════════════════════════════════════════════
+    if(rooms.length > 0){
+      doc.addPage(); pageNum++;
+      drawHeader();
+      setFont('bold', 12, 0,0,0);
+      txt('Recap by Room', PW/2, 170, 'center');
+
+      let ry = 200;
+      setFont('bold', 9, 0,0,0);
+      txt('Estimate: '+en, ML, ry); ry += 14;
+      txt('Area: '+insured, ML, ry); ry += 18;
+
+      roomGroups.filter(g=>g.items.length>0).forEach(grp=>{
+        const gt = grp.items.reduce((s,i)=>s+calcItem(i),0);
+        const pct = total>0 ? (gt/total*100).toFixed(2)+'%' : '0.00%';
+        setFont('normal', 9, 0,0,0);
+        txt('Area: '+grp.name, ML+12, ry);
+        txt(f2(gt), TOT_R-60, ry, 'right');
+        txt(pct,    TOT_R,    ry, 'right');
+        ry += 14;
+      });
+
+      hline(ry+2, ML, TOT_R, 0.7, 0); ry += 8;
+      setFont('bold', 9, 0,0,0);
+      txt('Subtotal of Areas', ML+12, ry);
+      txt(f2(total), TOT_R-60, ry, 'right');
+      txt('100.00%', TOT_R, ry, 'right');
+      ry += 14;
+      hline(ry+2, ML, TOT_R, 0.7, 0); ry += 8;
+      txt('Total', ML, ry);
+      txt(f2(total), TOT_R-60, ry, 'right');
+      txt('100.00%', TOT_R, ry, 'right');
+
+      drawFooter(pageNum);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // PAGES — Photos
+    // ════════════════════════════════════════════════════════════════════════
+    if(photos.length > 0){
+      const iW=(MR-ML-18)/2, iH=185;
+      for(let i=0; i<photos.length; i+=8){
+        doc.addPage(); pageNum++;
+        drawHeader();
+        const chunk = photos.slice(i,i+8);
+        chunk.forEach((p,j)=>{
+          const col=j%2, row2=Math.floor(j/2);
+          const ix = ML+(col*(iW+18));
+          const iy = HDR_BOTTOM+10+(row2*(iH+22));
+          setFont('normal',9,0,0,0);
+          txt(String(i+j+1), ix, iy+10);
+          try{ doc.addImage(p.src,'JPEG',ix,iy+14,iW,iH); }catch(e){}
+        });
         drawFooter(pageNum);
       }
     }
 
-    // ── OUTPUT: Blob URL — works on iPhone Safari ──
+    // ── Output ────────────────────────────────────────────────────────────────
     const pdfBlob = doc.output('blob');
     pdfBlobUrl = URL.createObjectURL(pdfBlob);
-
-    // Set the <a> href and show it
     link.href = pdfBlobUrl;
     link.setAttribute('download', en+'.pdf');
-    link.textContent = '📂 Open PDF — '+en+'.pdf';
+    link.textContent = 'Open / Save — '+en+'.pdf';
     link.style.display = 'inline-block';
-
-    status.textContent = '✅ Ready! Tap the button above to open.';
+    status.textContent = 'Ready!';
     status.className = 'status ok';
 
   } catch(err){
     console.error(err);
-    status.textContent='❌ Error: '+err.message;
-    status.className='status err';
+    status.textContent = 'Error: '+err.message;
+    status.className = 'status err';
   }
-  btn.disabled=false;
-  btn.innerHTML='⬇️ Generate PDF';
+  btn.disabled=false; btn.innerHTML='Generate PDF';
 }
 
-renderPL();renderLI();
+// Init
+renderPL(); renderLI();
 </script>
 </body>
 </html>
