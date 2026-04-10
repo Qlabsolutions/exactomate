@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>XactGen</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0f1117;--surf:#1a1d27;--surf2:#22263a;--bord:#2e3348;--acc:#2563eb;--acc2:#1d4ed8;--tx:#e8eaf0;--tx2:#9299b0;--tx3:#5a6080;--grn:#22c55e;--red:#ef4444}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.sidebar{background:var(--surf);border-right:1px solid var(--bord);padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{font-size:17px;font-weight:700;color:var(--tx);margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--bord);letter-spacing:-.5px}
+.logo span{color:var(--acc)}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;border:none;background:none;color:var(--tx2);font-family:inherit;font-size:13px;cursor:pointer;width:100%;text-align:left;transition:all .15s}
+.nav-btn:hover{background:var(--surf2);color:var(--tx)}
+.nav-btn.active{background:var(--acc);color:#fff;font-weight:500}
+.nav-sec{font-size:10px;font-weight:600;letter-spacing:1.2px;color:var(--tx3);text-transform:uppercase;padding:12px 11px 5px}
+.main{padding:24px 28px;max-width:1080px}
+.ptitle{font-size:20px;font-weight:700;margin-bottom:5px;letter-spacing:-.5px}
+.psub{font-size:12.5px;color:var(--tx2);margin-bottom:22px}
+.card{background:var(--surf);border:1px solid var(--bord);border-radius:11px;padding:20px 22px;margin-bottom:18px}
+.ctitle{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--tx2);margin-bottom:14px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg.full{grid-column:1/-1}
+label{font-size:11px;font-weight:500;color:var(--tx2);text-transform:uppercase;letter-spacing:.6px}
+input{background:var(--bg);border:1px solid var(--bord);border-radius:5px;padding:8px 11px;color:var(--tx);font-family:inherit;font-size:13px;transition:border-color .15s;width:100%}
+input:focus{outline:none;border-color:var(--acc)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border-radius:5px;border:none;font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .15s;text-decoration:none}
+.bp{background:var(--acc);color:#fff}.bp:hover{background:var(--acc2)}
+.bs{background:var(--surf2);color:var(--tx);border:1px solid var(--bord)}.bs:hover{border-color:var(--acc);color:var(--acc)}
+.bd{background:transparent;color:var(--red);border:1px solid transparent;padding:5px 9px}.bd:hover{background:rgba(239,68,68,.1);border-color:var(--red)}
+.bsm{padding:5px 10px;font-size:11.5px}
+.abar{display:flex;gap:9px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.twrap{overflow-x:auto;border-radius:7px;border:1px solid var(--bord)}
+table.ut{width:100%;border-collapse:collapse;font-size:12.5px}
+table.ut thead{background:var(--surf2)}
+table.ut th{padding:10px 12px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2);border-bottom:1px solid var(--bord);white-space:nowrap}
+table.ut td{padding:9px 12px;border-bottom:1px solid var(--bord);vertical-align:middle}
+table.ut tr:last-child td{border-bottom:none}
+.tdi{background:transparent;border:1px solid transparent;border-radius:3px;padding:3px 7px;color:var(--tx);font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%}
+.tdi:focus{border-color:var(--acc);outline:none;background:var(--bg)}
+.lig{display:grid;grid-template-columns:32px 1fr 92px 86px 86px 50px 82px 34px;gap:6px;align-items:center;padding:7px 0;border-bottom:1px solid var(--bord)}
+.lig:last-child{border-bottom:none}
+.lih{display:grid;grid-template-columns:32px 1fr 92px 86px 86px 50px 82px 34px;gap:6px;padding:5px 0;border-bottom:2px solid var(--bord);margin-bottom:3px}
+.lih span{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3)}
+.lnum{font-size:10px;color:var(--tx3);font-family:'IBM Plex Mono',monospace;text-align:center}
+.tdis{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--grn);font-weight:500}
+.sbar{background:var(--surf2);border:1px solid var(--bord);border-radius:9px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.si{text-align:center}.slbl{font-size:10.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.sval{font-size:19px;font-weight:700;font-family:'IBM Plex Mono',monospace}.sval.g{color:var(--grn)}
+.pgui{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:9px;margin-top:10px}
+.pth{position:relative;aspect-ratio:1;border-radius:7px;overflow:hidden;border:1px solid var(--bord);background:var(--surf2)}
+.pth img{width:100%;height:100%;object-fit:cover}
+.pdel{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.7);border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
+.pdrop{border:2px dashed var(--bord);border-radius:7px;padding:26px;text-align:center;color:var(--tx3);cursor:pointer;transition:all .15s;font-size:12.5px}
+.pdrop:hover{border-color:var(--acc);color:var(--acc);background:rgba(37,99,235,.04)}
+
+/* Generate page */
+.gen-box{background:var(--surf);border:1px solid var(--bord);border-radius:14px;padding:36px;text-align:center;margin-top:8px}
+.gen-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.gen-sub{font-size:13px;color:var(--tx2);margin-bottom:28px;line-height:1.6}
+.gen-btn-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+.big-btn{background:var(--grn);color:#fff;font-size:15px;padding:13px 32px;border-radius:9px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .15s;width:220px}
+.big-btn:hover{background:#16a34a}
+.big-btn:disabled{opacity:.5;cursor:not-allowed}
+/* The key: a real <a> tag that Safari can tap */
+.pdf-link{
+  display:none;
+  background:#1d4ed8;color:#fff;font-size:15px;padding:13px 32px;
+  border-radius:9px;font-weight:600;text-align:center;
+  text-decoration:none;width:220px;
+}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.status{font-size:12.5px;color:var(--tx2);margin-top:4px;min-height:18px}
+.status.ok{color:var(--grn)}.status.err{color:var(--red)}
+.iphone-tip{background:rgba(37,99,235,0.1);border:1px solid var(--acc);border-radius:8px;padding:12px 16px;font-size:12.5px;color:var(--tx2);line-height:1.6;margin-top:16px;text-align:left}
+.iphone-tip strong{color:var(--tx)}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="logo">X<span>act</span>Gen</div>
+    <div class="nav-sec">Setup</div>
+    <button class="nav-btn active" onclick="nav('company',this)">🏢 Company Info</button>
+    <button class="nav-btn" onclick="nav('claim',this)">📋 Claim Info</button>
+    <div class="nav-sec">Estimate</div>
+    <button class="nav-btn" onclick="nav('pricelist',this)">💲 Price List</button>
+    <button class="nav-btn" onclick="nav('lineitems',this)">📝 Line Items</button>
+    <button class="nav-btn" onclick="nav('photos',this)">📷 Photos</button>
+    <div class="nav-sec">Output</div>
+    <button class="nav-btn" onclick="nav('generate',this)">⬇️ Generate PDF</button>
+  </nav>
+  <div class="main">
+
+    <div id="pg-company">
+      <div class="ptitle">Company Info</div><div class="psub">Appears in every estimate header.</div>
+      <div class="card">
+        <div class="fg2">
+          <div class="fg full"><label>Company Name</label><input id="co-name" value="No limits restoration LLC"/></div>
+          <div class="fg"><label>Email</label><input id="co-email" value="nolimitsolutions18@gmail.com"/></div>
+          <div class="fg"><label>Phone</label><input id="co-phone" value="(754) 280-6618"/></div>
+          <div class="fg"><label>Street Address</label><input id="co-addr" value="424 SW Seventh St"/></div>
+          <div class="fg"><label>City / State / Zip</label><input id="co-city" value="Miami 33130"/></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="pg-claim" style="display:none">
+      <div class="ptitle">Claim Info</div><div class="psub">Insured and claim details.</div>
+      <div class="card">
+        <div class="ctitle">Insured</div>
+        <div class="fg2">
+          <div class="fg"><label>Insured Name</label><input id="insured" value="PIERRE DUJOUR"/></div>
+          <div class="fg"><label>Property Address</label><input id="prop-addr" value="2014 NE 168th St APT 1"/></div>
+          <div class="fg"><label>City / State / Zip</label><input id="prop-city" value="N Miami Beach, FL 33162"/></div>
+          <div class="fg"><label>Claim Rep</label><input id="claim-rep" value="No limits restoration LLC"/></div>
+          <div class="fg"><label>Estimator</label><input id="estimator" value="No limits restoration LLC"/></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ctitle">Claim Details</div>
+        <div class="fg3">
+          <div class="fg"><label>Claim Number</label><input id="claim-num" value="001-00-629508"/></div>
+          <div class="fg"><label>Policy Number</label><input id="policy-num" value="11532067-3"/></div>
+          <div class="fg"><label>Type of Loss</label><input id="type-loss" value="Wind Damage"/></div>
+          <div class="fg"><label>Date of Loss</label><input id="date-loss" value="6/2/2025"/></div>
+          <div class="fg"><label>Date Entered</label><input id="date-ent" value="4/8/2026"/></div>
+          <div class="fg"><label>Date Received</label><input id="date-rcvd" value=""/></div>
+          <div class="fg"><label>Price List Code</label><input id="pl-code" value="FLMI8X_APR26"/></div>
+          <div class="fg"><label>Labor Efficiency</label><input id="pl-type" value="Restoration/Service/Remodel"/></div>
+          <div class="fg full"><label>Estimate Name</label><input id="est-name" value="PDUJOUR_TARP"/></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="pg-pricelist" style="display:none">
+      <div class="ptitle">Price List</div><div class="psub">Reusable items and rates.</div>
+      <div class="abar"><button class="btn bp" onclick="addPL()">+ Add Item</button></div>
+      <div class="twrap"><table class="ut"><thead><tr><th>Code</th><th>Description</th><th>Unit</th><th>Remove $</th><th>Replace $</th><th></th></tr></thead><tbody id="pl-body"></tbody></table></div>
+    </div>
+
+    <div id="pg-lineitems" style="display:none">
+      <div class="ptitle">Line Items</div><div class="psub">Build your estimate.</div>
+      <div class="abar">
+        <button class="btn bp" onclick="addLI()">+ Add Line Item</button>
+        <button class="btn bs" onclick="openModal()">📋 From Price List</button>
+      </div>
+      <div class="card" style="padding:13px 17px">
+        <div class="lih"><span>#</span><span>Description</span><span>Qty/Unit</span><span>Remove</span><span>Replace</span><span>Tax</span><span>Total</span><span></span></div>
+        <div id="li-cont"></div>
+      </div>
+      <div class="sbar">
+        <div class="si"><div class="slbl">Line Item Total</div><div class="sval" id="s-tot">$0.00</div></div>
+        <div class="si"><div class="slbl">Replacement Cost Value</div><div class="sval g" id="s-rcv">$0.00</div></div>
+        <div class="si"><div class="slbl">Net Claim</div><div class="sval g" id="s-net">$0.00</div></div>
+      </div>
+    </div>
+
+    <div id="pg-photos" style="display:none">
+      <div class="ptitle">Photos</div><div class="psub">8 per page · 2 columns.</div>
+      <div class="card">
+        <div class="pdrop" onclick="document.getElementById('ph-in').click()">📷 Click to upload photos<br/><small style="color:var(--tx3);display:block;margin-top:3px">JPG · PNG · WEBP</small></div>
+        <input type="file" id="ph-in" multiple accept="image/*" style="display:none" onchange="loadPh(event)"/>
+        <div class="pgui" id="ph-grid"></div>
+      </div>
+    </div>
+
+    <div id="pg-generate" style="display:none">
+      <div class="ptitle">Generate PDF</div><div class="psub">Works on iPhone, Android, and desktop.</div>
+      <div class="gen-box">
+        <div class="gen-title">📄 Generate your estimate</div>
+        <div class="gen-sub">Click Generate — then tap the blue<br/><strong style="color:var(--tx)">Open PDF</strong> button to view and save it.</div>
+        <div class="gen-btn-wrap">
+          <button class="big-btn" id="gen-btn" onclick="generatePDF()">⬇️ Generate PDF</button>
+          <!-- This <a> tag is what Safari on iPhone can actually open -->
+          <a id="pdf-link" class="pdf-link" target="_blank">📂 Open PDF</a>
+          <div class="status" id="gen-status"></div>
+        </div>
+        <div class="iphone-tip">
+          <strong>📱 On iPhone:</strong> Tap <em>Generate PDF</em>, then tap <em>Open PDF</em>.<br/>
+          In Safari, tap the <strong>Share button (□↑)</strong> → <strong>Save to Files</strong> to keep it.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:var(--surf);border:1px solid var(--bord);border-radius:11px;width:90%;max-width:540px;max-height:80vh;overflow:auto;padding:22px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div style="font-weight:600;font-size:15px">Add from Price List</div>
+      <button class="btn bs bsm" onclick="closeModal()">✕</button>
+    </div>
+    <div class="twrap"><table class="ut"><thead><tr><th>Description</th><th>Unit</th><th>Remove</th><th>Replace</th><th></th></tr></thead><tbody id="modal-body"></tbody></table></div>
+  </div>
+</div>
+
+<script>
+const {jsPDF} = window.jspdf;
+
+let pl=[
+  {id:1,code:'TARP-REM',desc:'Remove Tarp - all-purpose poly - per sq ft (labor and material)',unit:'SF',rem:0.12,rep:0},
+  {id:2,code:'TARP-INS',desc:'Install Tarp - all-purpose poly - per sq ft (labor and material)',unit:'SF',rem:0,rep:1.50},
+  {id:3,code:'GEN-LAB',desc:'General Laborer - per hour',unit:'HR',rem:0,rep:55.06},
+  {id:4,code:'ROOF-TRK',desc:'Roof tarping - heavy duty poly - per sq ft',unit:'SF',rem:0,rep:2.10},
+  {id:5,code:'DEMO-DRY',desc:'Drywall - remove and dispose - per sq ft',unit:'SF',rem:0.55,rep:0},
+  {id:6,code:'INSUL-BAT',desc:'Insulation - batt type - per sq ft',unit:'SF',rem:0,rep:1.85},
+  {id:7,code:'PAINT-INT',desc:'Paint interior walls - per sq ft',unit:'SF',rem:0,rep:0.85},
+  {id:8,code:'FLOOR-TIL',desc:'Floor tile - remove and replace - per sq ft',unit:'SF',rem:0.45,rep:6.50},
+  {id:9,code:'WNDW-BRD',desc:'Board up window opening - per sq ft',unit:'SF',rem:0,rep:3.20},
+  {id:10,code:'CLEAN-GEN',desc:'General cleaning - per hour',unit:'HR',rem:0,rep:45.00},
+];
+let li=[
+  {id:1,desc:'Remove Tarp - all-purpose poly - per sq ft (labor and material)',qty:1500,unit:'SF',rem:0.12,rep:0,tax:0},
+  {id:2,desc:'Install Tarp - all-purpose poly - per sq ft (labor and material)',qty:1500,unit:'SF',rem:0,rep:1.50,tax:0},
+  {id:3,desc:'General Laborer - per hour',qty:3,unit:'HR',rem:0,rep:55.06,tax:0},
+  {id:4,desc:'Roof tarping - heavy duty poly - per sq ft',qty:500,unit:'SF',rem:0,rep:2.10,tax:0},
+  {id:5,desc:'Drywall - remove and dispose - per sq ft',qty:200,unit:'SF',rem:0.55,rep:0,tax:0},
+  {id:6,desc:'Insulation - batt type - per sq ft',qty:150,unit:'SF',rem:0,rep:1.85,tax:0},
+  {id:7,desc:'Paint interior walls - per sq ft',qty:400,unit:'SF',rem:0,rep:0.85,tax:0},
+  {id:8,desc:'Floor tile - remove and replace - per sq ft',qty:80,unit:'SF',rem:0.45,rep:6.50,tax:0},
+  {id:9,desc:'Board up window opening - per sq ft',qty:32,unit:'SF',rem:0,rep:3.20,tax:0},
+  {id:10,desc:'General cleaning - per hour',qty:4,unit:'HR',rem:0,rep:45.00,tax:0},
+];
+let photos=[];
+let plC=20,liC=20;
+let pdfBlobUrl=null;
+
+const g=id=>document.getElementById(id).value.trim();
+const $=id=>document.getElementById(id);
+const f2=n=>(+n).toFixed(2);
+const fm=n=>'$'+f2(n);
+const calc=item=>(item.qty*item.rem)+(item.qty*item.rep);
+const fq=(q,u)=>(+q).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' '+u;
+
+function nav(name,btn){
+  ['company','claim','pricelist','lineitems','photos','generate'].forEach(p=>
+    $('pg-'+p).style.display=p===name?'':'none');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='pricelist')renderPL();
+  if(name==='lineitems')renderLI();
+  if(name==='photos')renderPhUI();
+  if(name==='generate'){$('pdf-link').style.display='none';$('gen-status').textContent='';}
+}
+
+function renderPL(){
+  $('pl-body').innerHTML=pl.map(p=>`<tr>
+    <td><input class="tdi" style="width:86px" value="${p.code}" onchange="upPL(${p.id},'code',this.value)"/></td>
+    <td><input class="tdi" style="width:100%" value="${p.desc}" onchange="upPL(${p.id},'desc',this.value)"/></td>
+    <td><input class="tdi" style="width:42px" value="${p.unit}" onchange="upPL(${p.id},'unit',this.value)"/></td>
+    <td><input class="tdi" style="width:68px" type="number" step="0.01" value="${p.rem}" onchange="upPL(${p.id},'rem',+this.value)"/></td>
+    <td><input class="tdi" style="width:68px" type="number" step="0.01" value="${p.rep}" onchange="upPL(${p.id},'rep',+this.value)"/></td>
+    <td><button class="btn bd bsm" onclick="delPL(${p.id})">✕</button></td>
+  </tr>`).join('');
+}
+function upPL(id,f,v){const i=pl.find(x=>x.id===id);if(i)i[f]=v;}
+function delPL(id){pl=pl.filter(x=>x.id!==id);renderPL();}
+function addPL(){plC++;pl.push({id:plC,code:'NEW-'+plC,desc:'New item',unit:'SF',rem:0,rep:0});renderPL();}
+
+function renderLI(){
+  $('li-cont').innerHTML=li.map((item,i)=>`
+    <div class="lig">
+      <div class="lnum">${i+1}</div>
+      <input class="tdi" style="width:100%" value="${item.desc}" onchange="upLI(${item.id},'desc',this.value)"/>
+      <div style="display:flex;gap:3px">
+        <input class="tdi" style="width:48px" type="number" step="0.01" value="${item.qty}" onchange="upLI(${item.id},'qty',+this.value)"/>
+        <input class="tdi" style="width:32px" value="${item.unit}" onchange="upLI(${item.id},'unit',this.value)"/>
+      </div>
+      <input class="tdi" style="width:78px" type="number" step="0.01" value="${item.rem}" onchange="upLI(${item.id},'rem',+this.value)"/>
+      <input class="tdi" style="width:78px" type="number" step="0.01" value="${item.rep}" onchange="upLI(${item.id},'rep',+this.value)"/>
+      <input class="tdi" style="width:44px" type="number" step="0.01" value="${item.tax}" onchange="upLI(${item.id},'tax',+this.value)"/>
+      <div class="tdis">${fm(calc(item))}</div>
+      <button class="btn bd" style="padding:4px 7px" onclick="delLI(${item.id})">✕</button>
+    </div>`).join('');
+  const tot=li.reduce((s,i)=>s+calc(i),0);
+  $('s-tot').textContent=fm(tot);$('s-rcv').textContent=fm(tot);$('s-net').textContent=fm(tot);
+}
+function upLI(id,f,v){const i=li.find(x=>x.id===id);if(i){i[f]=v;renderLI();}}
+function delLI(id){li=li.filter(x=>x.id!==id);renderLI();}
+function addLI(){liC++;li.push({id:liC,desc:'New line item',qty:1,unit:'SF',rem:0,rep:0,tax:0});renderLI();}
+function openModal(){
+  $('modal').style.display='flex';
+  $('modal-body').innerHTML=pl.map(p=>`<tr>
+    <td>${p.desc}</td><td>${p.unit}</td><td>${f2(p.rem)}</td><td>${f2(p.rep)}</td>
+    <td><button class="btn bp bsm" onclick="pickPL(${p.id})">Add</button></td>
+  </tr>`).join('');
+}
+function closeModal(){$('modal').style.display='none';}
+function pickPL(id){
+  const p=pl.find(x=>x.id===id);if(!p)return;
+  liC++;li.push({id:liC,desc:p.desc,qty:1,unit:p.unit,rem:p.rem,rep:p.rep,tax:0});
+  closeModal();renderLI();
+}
+function loadPh(e){Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{photos.push({src:ev.target.result});renderPhUI();};r.readAsDataURL(f);});}
+function renderPhUI(){$('ph-grid').innerHTML=photos.map((p,i)=>`<div class="pth"><img src="${p.src}"/><button class="pdel" onclick="delPh(${i})">✕</button></div>`).join('');}
+function delPh(i){photos.splice(i,1);renderPhUI();}
+
+// ══════════════════════════════════════
+// PDF GENERATION
+// ══════════════════════════════════════
+async function generatePDF(){
+  const btn=$('gen-btn'), status=$('gen-status'), link=$('pdf-link');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span> Building...';
+  status.textContent=''; status.className='status';
+  link.style.display='none';
+
+  // Revoke old blob URL to free memory
+  if(pdfBlobUrl){ URL.revokeObjectURL(pdfBlobUrl); pdfBlobUrl=null; }
+
+  try {
+    const doc = new jsPDF({unit:'pt', format:'letter'});
+    const PW=612, PH=792;
+    const en=g('est-name'), de=g('date-ent');
+    const total=li.reduce((s,i)=>s+calc(i),0);
+
+    const TR=sz=>{doc.setFont('times','normal');doc.setFontSize(sz);doc.setTextColor(0,0,0);}
+    const TB=sz=>{doc.setFont('times','bold');doc.setFontSize(sz);doc.setTextColor(0,0,0);}
+    const t=(txt,x,y,a='left')=>doc.text(String(txt),x,y,{align:a});
+    const ln=(x1,y1,x2,y2,w=0.5,gray=0)=>{doc.setLineWidth(w);doc.setDrawColor(gray,gray,gray);doc.line(x1,y1,x2,y2);}
+    const fr=(x,y,w,h,r,gg,b)=>{doc.setFillColor(r,gg,b);doc.rect(x,y,w,h,'F');}
+
+    let pageNum=0;
+
+    function drawHeader(){
+      fr(36,18,54,54,31,78,31);
+      doc.setFont('times','bold'); doc.setFontSize(18); doc.setTextColor(255,255,255);
+      t('NR',44,51); doc.setTextColor(0,0,0);
+      TB(12); t(g('co-name'),103.5,56.9);
+      ln(36,72,PW-18,72,0.75,0);
+      TR(9); t(g('co-email'),103.5,69);
+    }
+
+    function drawFooter(n){
+      ln(18,731,PW-18,731,0.5,0.6);
+      TR(10);
+      t(en,27,742.6);
+      t(de,PW/2,742.6,'center');
+      t('Page: '+n,PW-18,742.6,'right');
+    }
+
+    // ── PAGE 1 ──
+    pageNum++;
+    drawHeader();
+    const LR=111,VX=127,RLR=420,RVX=432;
+    let ry=669.8;
+    const RS=13.3;
+    function row(lbl,val,rl='',rv=''){
+      TB(10);t(lbl,LR,ry,'right');TR(10);t(val,VX,ry);
+      if(rl){TB(10);t(rl,RLR,ry,'right');}
+      if(rv){TR(10);t(rv,RVX,ry);}
+      ry-=RS;
+    }
+    row('Client:',g('insured'));
+    row('Property:',g('prop-addr'));
+    TR(10);t(g('prop-city'),VX,ry);ry-=RS+4;
+    row('Operator:','ADMIN');
+    ry-=4;
+    row('Estimator:',g('estimator'),'E-mail:',g('co-email'));
+    row('Business:',g('co-addr'));
+    TR(10);t(g('co-city'),VX,ry);ry-=RS+4;
+    row('Type of Estimate:',g('type-loss'));
+    row('Date Entered:',g('date-ent'),'Date Assigned:','');
+    row('Date Est. Completed:','','Date Job Completed:',g('date-rcvd'));
+    ry-=4;
+    row('Price List:',g('pl-code'));
+    row('Labor Efficiency:',g('pl-type'));
+    row('Estimate:',en);
+    drawFooter(pageNum);
+
+    // ── PAGE 2 — Line Items ──
+    doc.addPage(); pageNum++;
+    drawHeader();
+    TB(10);t(en,PW/2,665,'center');
+    TR(10);t(g('insured'),PW/2,647.9,'center');
+    TB(10);t('Main Level',PW/2,630.8,'center');
+    TB(10);t('Main Level',36,617.3);
+
+    const C={dL:36,qR:256,mR:325,pR:409,xR:492,tR:576};
+    const HDR=595.8;
+
+    function tblHdr(y){
+      fr(36,y-10,PW-54,14,242,242,242);
+      ln(36,y-10,PW-18,y-10,0.6,0.53);
+      ln(36,y+4,PW-18,y+4,0.6,0.53);
+      TB(9);
+      t('DESCRIPTION',C.dL+2,y);t('QTY',C.qR,y,'right');
+      t('REMOVE',C.mR,y,'right');t('REPLACE',C.pR,y,'right');
+      t('TAX',C.xR,y,'right');t('TOTAL',C.tR,y,'right');
+    }
+    tblHdr(HDR);
+    let dy=HDR-18;
+    TR(9);
+    li.forEach(item=>{
+      const tot=calc(item);
+      const lines=doc.splitTextToSize(item.desc,C.qR-C.dL-10);
+      const needed=lines.length*11+4;
+      if(dy-needed<85){
+        drawFooter(pageNum);doc.addPage();pageNum++;
+        drawHeader();tblHdr(HDR);dy=HDR-18;TR(9);
+      }
+      lines.forEach((ln2,i2)=>t(ln2,C.dL+2,dy-i2*11));
+      t(fq(item.qty,item.unit),C.qR,dy,'right');
+      t(f2(item.rem),C.mR,dy,'right');
+      t(f2(item.rep),C.pR,dy,'right');
+      t(f2(item.tax),C.xR,dy,'right');
+      t(f2(tot),C.tR,dy,'right');
+      dy-=needed;
+      ln(36,dy+6,PW-18,dy+6,0.3,0.8);
+      dy-=4;
+    });
+    // total rows
+    dy-=2; ln(36,dy+8,PW-18,dy+8,0.8,0.4); dy-=2;
+    TR(9);t('Total:  Main Level',C.dL+2,dy);t(f2(0),C.xR,dy,'right');t(f2(total),C.tR,dy,'right');
+    dy-=14; ln(36,dy+8,PW-18,dy+8,0.8,0.4);
+    TB(9);t('Total: '+g('insured'),C.dL+2,dy);t(f2(0),C.xR,dy,'right');t(f2(total),C.tR,dy,'right');
+    dy-=14; ln(36,dy+8,PW-18,dy+8,0.8,0.4);
+    TB(9);t('Line Item Totals: '+en,C.dL+2,dy);t(f2(0),C.xR,dy,'right');t(f2(total),C.tR,dy,'right');
+    dy-=4; ln(36,dy+8,PW-18,dy+8,1,0);
+    drawFooter(pageNum);
+
+    // ── PAGE 3 — Summary ──
+    doc.addPage(); pageNum++;
+    drawHeader();
+    TB(12);t('Summary',PW/2,636,'center');
+    TR(10);t('Line Item Total',36,620);t(f2(total),PW-18,620,'right');
+    ln(36,615,PW-18,615,0.5,0.7);
+    TB(10);t('Replacement Cost Value',36,599.1);t(fm(total),PW-18,599.1,'right');
+    ln(36,594,PW-18,594,1.2,0);
+    TB(10);t('Net Claim',36,585.2);t(fm(total),PW-18,585.2,'right');
+    ln(36,580,PW-18,580,1.2,0);
+    ln(36,578,PW-18,578,0.5,0);
+    ln(215,532,390,532,0.7,0);
+    TR(10);t(g('co-name'),216,523.4);
+    drawFooter(pageNum);
+
+    // ── PAGE 4 — Recap of Taxes ──
+    doc.addPage(); pageNum++;
+    drawHeader();
+    TB(12);t('Recap of Taxes',PW/2,636,'center');
+    drawFooter(pageNum);
+
+    // ── PHOTO PAGES ──
+    if(photos.length>0){
+      const iW=(PW-72)/2,iH=185;
+      for(let i=0;i<photos.length;i+=8){
+        doc.addPage();pageNum++;drawHeader();
+        const chunk=photos.slice(i,i+8);
+        for(let j=0;j<chunk.length;j++){
+          const col=j%2,row2=Math.floor(j/2);
+          const ix=36+(col*(iW+18)),iy=90+(row2*(iH+22));
+          TB(9);t(String(i+j+1),ix,iy+8);
+          try{doc.addImage(chunk[j].src,'JPEG',ix,iy+11,iW,iH-11);}catch(e){}
+        }
+        drawFooter(pageNum);
+      }
+    }
+
+    // ── OUTPUT: Blob URL — works on iPhone Safari ──
+    const pdfBlob = doc.output('blob');
+    pdfBlobUrl = URL.createObjectURL(pdfBlob);
+
+    // Set the <a> href and show it
+    link.href = pdfBlobUrl;
+    link.setAttribute('download', en+'.pdf');
+    link.textContent = '📂 Open PDF — '+en+'.pdf';
+    link.style.display = 'inline-block';
+
+    status.textContent = '✅ Ready! Tap the button above to open.';
+    status.className = 'status ok';
+
+  } catch(err){
+    console.error(err);
+    status.textContent='❌ Error: '+err.message;
+    status.className='status err';
+  }
+  btn.disabled=false;
+  btn.innerHTML='⬇️ Generate PDF';
+}
+
+renderPL();renderLI();
+</script>
+</body>
+</html>
