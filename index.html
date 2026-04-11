@@ -374,9 +374,9 @@ function renderPhUI(){ $('ph-grid').innerHTML=photos.map((p,i)=>`<div class="pth
 function delPh(i){ photos.splice(i,1); renderPhUI(); }
 
 // ══════════════════════════════════════════════════════════════════════════════
-//  PDF GENERATION
-//  Coordinate system: jsPDF pt, origin TOP-LEFT, y increases DOWNWARD
-//  Letter = 612 × 792 pt
+//  PDF GENERATION — pixel-exact Xactimate clone
+//  All coordinates verified against real Xactimate PDFs via pdfplumber
+//  jsPDF: unit=pt, origin TOP-LEFT, y increases DOWNWARD, Letter=612×792
 // ══════════════════════════════════════════════════════════════════════════════
 async function generatePDF(){
   const btn=$('gen-btn'), status=$('gen-status'), link=$('pdf-link');
@@ -386,462 +386,394 @@ async function generatePDF(){
 
   try {
     const doc = new jsPDF({unit:'pt', format:'letter'});
-    const PW=612, PH=792;
+    const PW=612;
 
-    // Margin
-    const ML=54, MR=558; // left/right content edges
+    // ── Field values ──────────────────────────────────────────────────────────
+    const en       = g('est-name');
+    const coName   = g('co-name');
+    const coEmail  = g('co-email');
+    const coAddr   = g('co-addr');
+    const coCity   = g('co-city');
+    const insured  = g('insured');
+    const propAddr = g('prop-addr');
+    const propCity = g('prop-city');
+    const operator = g('operator');
+    const estimator= g('estimator');
+    const typeLoss = g('type-loss');
+    const dateEnt  = g('date-ent');
+    const dateAssn = g('date-assigned');
+    const dateEstC = g('date-est-comp');
+    const dateJobC = g('date-job-comp');
+    const plCode   = g('pl-code');
+    const plType   = g('pl-type');
+    const total    = li.reduce((s,i)=>s+calcItem(i),0);
 
-    // Values from fields
-    const en        = g('est-name');
-    const coName    = g('co-name');
-    const coEmail   = g('co-email');
-    const coAddr    = g('co-addr');
-    const coCity    = g('co-city');
-    const insured   = g('insured');
-    const propAddr  = g('prop-addr');
-    const propCity  = g('prop-city');
-    const operator  = g('operator');
-    const estimator = g('estimator');
-    const typeLoss  = g('type-loss');
-    const dateEnt   = g('date-ent');
-    const dateAssn  = g('date-assigned');
-    const dateEstC  = g('date-est-comp');
-    const dateJobC  = g('date-job-comp');
-    const plCode    = g('pl-code');
-    const plType    = g('pl-type');
-    const total     = li.reduce((s,i)=>s+calcItem(i), 0);
+    // ── Drawing helpers ───────────────────────────────────────────────────────
+    const TN = sz => { doc.setFont('times','normal'); doc.setFontSize(sz); doc.setTextColor(0,0,0); };
+    const TB = sz => { doc.setFont('times','bold');   doc.setFontSize(sz); doc.setTextColor(0,0,0); };
+    const t  = (s,x,y,a='left') => doc.text(String(s),x,y,{align:a});
+    const ln = (x1,y1,x2,y2,w=0.5,gr=0) => { doc.setLineWidth(w); doc.setDrawColor(gr,gr,gr); doc.line(x1,y1,x2,y2); };
+    const fr = (x,y,w,h,r,gg,b) => { doc.setFillColor(r,gg,b); doc.rect(x,y,w,h,'F'); };
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-    // All y values are from TOP of page
-    function setFont(style, size, r=0,gg=0,b=0){
-      doc.setFont('times', style);
-      doc.setFontSize(size);
-      doc.setTextColor(r,gg,b);
-    }
-    function txt(str, x, y, align='left'){
-      doc.text(String(str), x, y, {align});
-    }
-    function hline(y, x1=ML, x2=MR, w=0.5, gray=0){
-      doc.setLineWidth(w);
-      doc.setDrawColor(gray,gray,gray);
-      doc.line(x1, y, x2, y);
-    }
-    function fillRect(x, y, w, h, r, gg, b){
-      doc.setFillColor(r,gg,b);
-      doc.rect(x, y, w, h, 'F');
-    }
+    let pageNum=0;
 
-    let pageNum = 0;
-
-    // ── Page header ───────────────────────────────────────────────────────────
-    // Header occupies y=18..75 (top 75pt)
-    // Logo/box: x=36, y=20, w=50, h=40
-    // Company name: bold, y=40
-    // Horizontal rule: y=75
-    // Email: y=88
-    const HDR_BOTTOM = 90; // content starts below this
-
+    // ════════════════════════════════════════════════════════════════════════
+    // HEADER — measured from real Xactimate PDF (KATHALEEN_WD)
+    // NR box:      x=36, y=14, w=52, h=46  (green 31,78,31)
+    // NR text:     center x=62, baseline y=51, bold 20pt white
+    // Company:     x=103.5, baseline y=56, bold 12pt black
+    // H-rule:      y=63, x=36–576, w=0.75
+    // Email:       x=103.5, baseline y=72, normal 9pt
+    // ════════════════════════════════════════════════════════════════════════
     function drawHeader(){
       if(logoB64){
-        try{ doc.addImage(logoB64, 'PNG', 36, 20, 50, 40); }catch(e){}
+        try{ doc.addImage(logoB64,'PNG',36,14,52,46); }catch(e){}
       } else {
-        // Green NR box
-        fillRect(36, 20, 50, 40, 31, 78, 31);
-        setFont('bold', 20, 255,255,255);
-        txt('NR', 61, 47, 'center');
+        fr(36,14,52,46, 31,78,31);
+        doc.setFont('times','bold'); doc.setFontSize(20); doc.setTextColor(255,255,255);
+        t('NR',62,51,'center');
+        doc.setTextColor(0,0,0);
       }
-      // Company name — bold, right of logo
-      setFont('bold', 13, 0,0,0);
-      txt(coName, 100, 40);
-      // Horizontal rule
-      hline(60, 36, MR+18, 0.8);
-      // Email below rule
-      setFont('normal', 9, 0,0,0);
-      txt(coEmail, 100, 73);
+      TB(12); t(coName, 103.5, 56);
+      ln(36,63, 576,63, 0.75,0);
+      TN(9);  t(coEmail,103.5,72);
     }
 
-    // ── Page footer ───────────────────────────────────────────────────────────
-    // Rule at y=748, text at y=762
+    // ════════════════════════════════════════════════════════════════════════
+    // FOOTER — measured from real Xactimate PDF
+    // Rule:  y=714, x=18–594, w=0.5, gray=160
+    // Text:  baseline y=728, 10pt normal
+    //   estimate name: x=27 left
+    //   date:          x=306 center
+    //   page:          x=576 right-align
+    // ════════════════════════════════════════════════════════════════════════
     function drawFooter(n){
-      hline(748, 18, MR+18, 0.5, 160);
-      setFont('normal', 10, 0,0,0);
-      txt(en,      27,    762);
-      txt(dateEnt, PW/2,  762, 'center');
-      txt('Page: '+n, MR+18, 762, 'right');
+      ln(18,714, 594,714, 0.5,160);
+      TN(10);
+      t(en,    27,  728);
+      t(dateEnt,306,728,'center');
+      t('Page: '+n, 576,728,'right');
     }
 
     // ════════════════════════════════════════════════════════════════════════
     // PAGE 1 — Cover page
+    // Measured from KATHALEEN_WD (top-down baselines):
+    //   Left labels right-align at x=112.5, values left at x=127.1
+    //   Date right labels at x=322.6, date values at x=333.0
+    //   Estimator email label at x=435.8, value at x=446.6
     // ════════════════════════════════════════════════════════════════════════
     pageNum++;
     drawHeader();
 
-    // Layout: two columns of label:value pairs
-    // Left column  — label right-aligned to x=160, value starts at x=168
-    // Right column — label right-aligned to x=390, value starts at x=398
-    //
-    // Measured from real Xactimate PDF (letter, pt):
-    // First row starts at y≈160 (below header area)
+    const LR=112.5, LV=127.1;   // left column: label right, value left
+    const DR=322.6, DV=333.0;   // date right column: label right, value left
+    const ER=435.8, EV=446.6;   // email right col (estimator row only)
 
-    const LBL_R  = 160;  // left labels right-align here
-    const VAL_L  = 168;  // left values start here
-    const LBL2_R = 390;  // right labels right-align here
-    const VAL2_L = 398;  // right values start here
+    TN(10);
+    // Client y=119, Property y=133, city y=146
+    t('Client:',   LR,119,'right'); t(insured,  LV,119);
+    t('Property:', LR,133,'right'); t(propAddr, LV,133);
+    t(propCity, LV,146);
 
-    let cy = 160;       // current y (top of text baseline)
-    const ROW = 16;     // row height
+    // Operator y=178 (gap ~32 after city)
+    t('Operator:', LR,178,'right'); t(operator, LV,178);
 
-    function coverRow(lbl, val, lbl2='', val2=''){
-      setFont('normal', 10, 0,0,0);
-      txt(lbl,  LBL_R, cy, 'right');
-      txt(val,  VAL_L, cy);
-      if(lbl2){ txt(lbl2, LBL2_R, cy, 'right'); }
-      if(val2){ txt(val2, VAL2_L, cy); }
-      cy += ROW;
-    }
+    // Estimator y=208 (gap ~30), with E-mail on right
+    t('Estimator:', LR,208,'right'); t(estimator,LV,208);
+    t('E-mail:',    ER,208,'right'); t(coEmail,  EV,208);
 
-    // Client + Property (no right column)
-    coverRow('Client:',   insured);
-    coverRow('Property:', propAddr);
-    txt(propCity, VAL_L, cy); cy += ROW;
-    cy += 4; // gap
+    // Business y=221, city y=235
+    t('Business:', LR,221,'right'); t(coAddr,   LV,221);
+    t(coCity, LV,235);
 
-    // Operator
-    coverRow('Operator:', operator);
-    cy += 4;
+    // Type of Estimate y=265 (gap ~30)
+    t('Type of Estimate:', LR,265,'right'); t(typeLoss,LV,265);
 
-    // Estimator + E-mail on same row
-    setFont('normal',10,0,0,0);
-    txt('Estimator:', LBL_R, cy, 'right');
-    txt(estimator,   VAL_L,  cy);
-    txt('E-mail:',   LBL2_R, cy, 'right');
-    txt(coEmail,     VAL2_L, cy);
-    cy += ROW;
+    // Dates y=278, y=292
+    t('Date Entered:',      LR,278,'right'); t(dateEnt, LV,278);
+    t('Date Assigned:',     DR,278,'right'); t(dateAssn,DV,278);
+    t('Date Est. Completed:', LR,292,'right'); t(dateEstC,LV,292);
+    t('Date Job Completed:', DR,292,'right'); t(dateJobC,DV,292);
 
-    // Business address
-    coverRow('Business:', coAddr);
-    txt(coCity, VAL_L, cy); cy += ROW;
-    cy += 4;
-
-    // Type of Estimate
-    coverRow('Type of Estimate:', typeLoss);
-
-    // Date rows — two columns
-    coverRow('Date Entered:', dateEnt, 'Date Assigned:', dateAssn);
-    coverRow('Date Est. Completed:', dateEstC, 'Date Job Completed:', dateJobC);
-    cy += 4;
-
-    // Price list block
-    coverRow('Price List:',       plCode);
-    coverRow('Labor Efficiency:', plType);
-    coverRow('Estimate:',         en);
+    // Price list y=323, y=336, y=349 (gap ~31)
+    t('Price List:',       LR,323,'right'); t(plCode,LV,323);
+    t('Labor Efficiency:', LR,336,'right'); t(plType,LV,336);
+    t('Estimate:',         LR,349,'right'); t(en,    LV,349);
 
     drawFooter(pageNum);
 
     // ════════════════════════════════════════════════════════════════════════
     // PAGE 2+ — Line Items
+    // Measured from KATHALEEN_WD:
+    //   Centered headings: est-name y=124, client y=141, area y=158
+    //   Section label: x=36, y=172, bold 10pt
+    //   Col header bar: fillRect(36, 179, 540, 20), text baseline y=194
+    //   First item baseline: y=213
+    //   Col right-edges: QTY=235, REM=325, REP=409, TAX=493, TOT=576
+    //   Description: starts x=36 (item num) + x=50 (text), wrap 185pt
+    //   Row spacing: 16pt single-line, 14pt after multi-line continuation
+    //   Section total: last item y + 22
+    //   Total rows: 23pt apart
+    //   Footer guard: don't draw below y=706
     // ════════════════════════════════════════════════════════════════════════
-    // Column x positions (right-edge of each column, values right-aligned):
-    //   DESCRIPTION: left-starts at DESC_L, wraps within DESC_W
-    //   QTY, REMOVE, REPLACE, TAX, TOTAL: right-aligned at their _R values
-    //
-    // Real Xactimate column proportions on 612pt letter:
-    //   Left margin 54, right margin 558 → usable 504pt
-    //   Description ~220pt, then 5 cols × ~57pt each
 
-    const DESC_L = 54;   // description text left edge
-    const DESC_W = 200;  // description wrap width (stays clear of QTY col)
-    const QTY_R  = 318;  // QTY right-align  (number + unit, e.g. "1,500.00 SF")
-    const REM_R  = 382;  // REMOVE right-align
-    const REP_R  = 446;  // REPLACE right-align
-    const TAX_R  = 502;  // TAX right-align
-    const TOT_R  = 558;  // TOTAL right-align
+    // Column x positions (right-edge, right-aligned text)
+    const DL=36;   // description / section label left
+    const DT=50;   // description TEXT indent (past item number)
+    // DW: max wrap width for description text, starting at x=DT=50
+    // Must stop well before QR=235: 235 - 50 - 12(gap) = 173pt
+    const DW=173;  // description wrap width
+    const QR=235;  // QTY right
+    const MR=325;  // REMOVE right
+    const PR=409;  // REPLACE right
+    const XR=493;  // TAX right
+    const TR=576;  // TOTAL right
 
-    // Page vertical zones
-    const CONTENT_TOP = HDR_BOTTOM + 8; // first content y on any page
-    const FOOTER_Y    = 738;            // items must not cross this line
+    const FOOTER_GUARD = 706; // items must not start below this y
 
-    // ── Column header bar (drawn once per section, or after page break) ──────
-    function drawColHeader(y){
-      fillRect(ML-2, y, MR-ML+22, 14, 238,238,238);
-      hline(y,    ML-2, MR+20, 0.5, 150);
-      hline(y+14, ML-2, MR+20, 0.5, 150);
-      setFont('bold', 9, 0,0,0);
-      txt('DESCRIPTION', DESC_L,  y+10);
-      txt('QTY',         QTY_R,   y+10, 'right');
-      txt('REMOVE',      REM_R,   y+10, 'right');
-      txt('REPLACE',     REP_R,   y+10, 'right');
-      txt('TAX',         TAX_R,   y+10, 'right');
-      txt('TOTAL',       TOT_R,   y+10, 'right');
+    function drawColHeader(barTop){
+      // Gray bar
+      fr(36,barTop, 540,20, 238,238,238);
+      ln(36,barTop,     576,barTop,     0.5,140);
+      ln(36,barTop+20,  576,barTop+20,  0.5,140);
+      TB(9);
+      const ty = barTop+15; // text baseline inside bar
+      t('DESCRIPTION',DL+2,ty);
+      t('QTY',  QR,ty,'right');
+      t('REMOVE',MR,ty,'right');
+      t('REPLACE',PR,ty,'right');
+      t('TAX',  XR,ty,'right');
+      t('TOTAL',TR,ty,'right');
     }
 
-    // ── Build room groups ─────────────────────────────────────────────────────
-    const roomGroups = [];
-    const mainItems = li.filter(i => !i.room || i.room==='');
-    roomGroups.push({name:'Main Level', items: mainItems});
-    rooms.forEach(rm => {
-      const rmItems = li.filter(i => String(i.room) === String(rm.id));
-      if(rmItems.length > 0) roomGroups.push({name:rm.name, items:rmItems});
+    // Build room groups
+    const roomGroups=[];
+    const mainItems=li.filter(i=>!i.room||i.room==='');
+    roomGroups.push({name:'Main Level',items:mainItems});
+    rooms.forEach(rm=>{
+      const rmi=li.filter(i=>String(i.room)===String(rm.id));
+      if(rmi.length>0) roomGroups.push({name:rm.name,items:rmi});
     });
 
-    // ── y = vertical cursor from TOP of page, increases downward ─────────────
-    let y = 0;
-
-    // ── Open the first line-items page ───────────────────────────────────────
-    doc.addPage();
-    pageNum++;
+    // Open first line-items page
+    doc.addPage(); pageNum++;
     drawHeader();
-    y = CONTENT_TOP;
 
-    // Centred title block
-    setFont('bold', 10, 0,0,0);
-    txt(en,      PW/2, y+12, 'center');
-    txt(insured, PW/2, y+26, 'center');
-    txt('Main Level', PW/2, y+40, 'center');
-    y += 56;
+    // Centered title block — estimate name y=124, client y=141 only
+    // (Section label "Main Level" appears below as the bold group header — NOT here)
+    TB(10); t(en,      PW/2,124,'center');
+    TN(10); t(insured, PW/2,141,'center');
 
-    let globalItemNum = 1;
+    let y=158; // after 2nd centered line (client y=141 + ~17pt gap to section label)
 
-    roomGroups.forEach(grp => {
-      if(grp.items.length === 0) return;
-
-      // Need space for: section label(14) + col-header(18) + at least one item(~30)
-      // If not enough room, start a new page — then draw label+colhdr fresh
-      if(y + 62 > FOOTER_Y){
-        drawFooter(pageNum);
-        doc.addPage(); pageNum++;
-        drawHeader();
-        y = CONTENT_TOP;
-      }
-
-      // Section label (bold)
-      setFont('bold', 9, 0,0,0);
-      txt(grp.name, DESC_L, y+10);
-      y += 14;
-
-      // Column header bar for this section
-      drawColHeader(y);
-      y += 18;
-
-      let sectionTotal = 0;
-
-      grp.items.forEach(item => {
-        const tot   = calcItem(item);
-        sectionTotal += tot;
-
-        const lines = doc.splitTextToSize(item.desc, DESC_W);
-        const rowH  = lines.length * 12 + 8; // 12pt/line + 8 padding
-
-        // If this item doesn't fit, break to new page and re-draw col-header
-        if(y + rowH > FOOTER_Y){
-          drawFooter(pageNum);
-          doc.addPage(); pageNum++;
-          drawHeader();
-          y = CONTENT_TOP;
-          drawColHeader(y);
-          y += 18;
-          setFont('normal', 9, 0,0,0);
-        }
-
-        // Item number — gray
-        setFont('normal', 9, 130,130,130);
-        txt(globalItemNum+'.', DESC_L - 2, y+10);
-        globalItemNum++;
-
-        // Description text — black, indented slightly past item number
-        setFont('normal', 9, 0,0,0);
-        lines.forEach((line, li2) => txt(line, DESC_L+13, y+10+(li2*12)));
-
-        // Numbers on first line's baseline
-        const by = y + 10;
-        txt(fq(item.qty, item.unit), QTY_R, by, 'right');
-        txt(f2(item.rem),            REM_R, by, 'right');
-        txt(f2(item.rep),            REP_R, by, 'right');
-        txt(f2(item.tax>0 ? item.qty*item.rep*item.tax/100 : 0), TAX_R, by, 'right');
-        txt(f2(tot),                 TOT_R, by, 'right');
-
-        y += rowH;
-
-        // Thin separator line
-        doc.setLineWidth(0.25); doc.setDrawColor(210,210,210);
-        doc.line(ML-2, y, MR+20, y);
-        y += 3;
-      });
-
-      // Section totals row
-      if(y + 22 > FOOTER_Y){
-        drawFooter(pageNum);
-        doc.addPage(); pageNum++;
-        drawHeader();
-        y = CONTENT_TOP;
-      }
-      y += 2;
-      hline(y, ML-2, MR+20, 0.6, 0);
-      y += 4;
-      setFont('normal', 9, 0,0,0);
-      txt('Totals:  '+grp.name, DESC_L, y+8);
-      txt(f2(0),            TAX_R, y+8, 'right');
-      txt(f2(sectionTotal), TOT_R, y+8, 'right');
-      y += 20;
-    });
-
-    // ── Grand total block ─────────────────────────────────────────────────────
-    // Needs ~60pt — check and break if needed
-    if(y + 60 > FOOTER_Y){
+    // newPage: break to a new page, redraw header + col-header, reset y
+    function newPage(){
       drawFooter(pageNum);
       doc.addPage(); pageNum++;
       drawHeader();
-      y = CONTENT_TOP;
+      // On overflow pages: section label omitted, col header at top
+      drawColHeader(80);
+      y = 80+20+6; // bar bottom + small gap
+      TN(9);
     }
 
-    y += 4;
-    hline(y, ML-2, MR+20, 0.8, 0); y += 2;
-    setFont('normal', 9, 0,0,0);
-    txt('Total:  Main Level', DESC_L, y+9);
-    txt(f2(0),     TAX_R, y+9, 'right');
-    txt(f2(total), TOT_R, y+9, 'right');
-    y += 20;
+    let globalNum=1;
 
-    hline(y, ML-2, MR+20, 0.8, 0); y += 2;
-    setFont('bold', 9, 0,0,0);
-    txt('Total: '+insured, DESC_L, y+9);
-    txt(f2(0),     TAX_R, y+9, 'right');
-    txt(f2(total), TOT_R, y+9, 'right');
-    y += 20;
+    roomGroups.forEach(grp=>{
+      if(grp.items.length===0) return;
 
-    hline(y, ML-2, MR+20, 0.8, 0); y += 2;
-    setFont('bold', 9, 0,0,0);
-    txt('Line Item Totals: '+en, DESC_L, y+9);
-    txt(f2(0),     TAX_R, y+9, 'right');
-    txt(f2(total), TOT_R, y+9, 'right');
-    y += 14;
-    hline(y,   ML-2, MR+20, 1.2, 0);
-    hline(y+3, ML-2, MR+20, 0.4, 0);
+      // Section needs: label(13) + bar(20) + at least one item(~30) = 63
+      if(y + 63 > FOOTER_GUARD) newPage();
+
+      // Section label
+      TB(10); t(grp.name, DL, y);
+      y += 7; // label baseline to bar top = ~7pt gap
+
+      // Column header bar (bar top = y, text baseline = y+15)
+      drawColHeader(y);
+      y += 26; // clear past bar (20) + 6pt gap to first item baseline
+
+      let secTotal=0;
+
+      grp.items.forEach(item=>{
+        const tot=calcItem(item);
+        secTotal+=tot;
+
+        const lines=doc.splitTextToSize(item.desc,DW);
+        const lineCount=lines.length;
+
+        // Row height:
+        // Single-line: 16pt to next item baseline
+        // Multi-line: continuation lines 10pt apart, last line to next item 14pt
+        const itemH = lineCount===1 ? 16 : (lineCount-1)*10 + 14;
+
+        if(y + itemH > FOOTER_GUARD) newPage();
+
+        // Item number (gray, 8pt, left of description)
+        doc.setFont('times','normal'); doc.setFontSize(8); doc.setTextColor(130,130,130);
+        t(globalNum+'.', DL, y);
+        globalNum++;
+
+        // Description text
+        TN(9);
+        lines.forEach((ln2,i2)=> t(ln2, DT, y+(i2*10)));
+
+        // Values on first line's baseline
+        t(fq(item.qty,item.unit), QR,y,'right');
+        t(f2(item.rem),            MR,y,'right');
+        t(f2(item.rep),            PR,y,'right');
+        t(f2(item.tax>0? item.qty*item.rep*item.tax/100 :0), XR,y,'right');
+        t(f2(tot),                 TR,y,'right');
+
+        // Advance: 16pt for single-line, 14pt after last continuation line
+        y += itemH;
+
+        // Thin gray separator
+        doc.setLineWidth(0.25); doc.setDrawColor(210,210,210);
+        doc.line(36,y+2, 576,y+2);
+        y += 5;
+      });
+
+      // Section total — needs ~22pt gap from last item
+      if(y + 22 > FOOTER_GUARD) newPage();
+      y += 4;
+      ln(36,y, 576,y, 0.6,0);
+      y += 9;
+      TN(9); t('Totals:  '+grp.name, DL+2,y);
+      t(f2(0), XR,y,'right');
+      t(f2(secTotal), TR,y,'right');
+      y += 23; // 23pt to next total row
+    });
+
+    // Grand total block — 3 rows × 23pt + double rule ≈ 72pt
+    if(y + 72 > FOOTER_GUARD){ newPage(); y+=10; }
+
+    ln(36,y, 576,y, 0.8,0); y+=9;
+    TN(9); t('Total:  Main Level', DL+2,y);
+    t(f2(0),XR,y,'right'); t(f2(total),TR,y,'right');
+    y+=23;
+
+    ln(36,y, 576,y, 0.8,0); y+=9;
+    TB(9); t('Total: '+insured, DL+2,y);
+    t(f2(0),XR,y,'right'); t(f2(total),TR,y,'right');
+    y+=23;
+
+    ln(36,y, 576,y, 0.8,0); y+=9;
+    TB(9); t('Line Item Totals: '+en, DL+2,y);
+    t(f2(0),XR,y,'right'); t(f2(total),TR,y,'right');
+    y+=6;
+    ln(36,y, 576,y, 1.2,0);
+    ln(36,y+3, 576,y+3, 0.4,0);
 
     drawFooter(pageNum);
 
     // ════════════════════════════════════════════════════════════════════════
-    // PAGE — Summary
+    // SUMMARY PAGE — measured from real PDF
+    // "Summary" centered bold 12pt: y=152
+    // "Line Item Total": y=169, value right x=576
+    // Thin rule: y=173
+    // "Replacement Cost Value" bold: y=190
+    // Double rule: y=194+y=196
+    // "Net Claim" bold: y=207
+    // Double rule: y=211+y=213
+    // Signature hline: y=266, x=215–395
+    // Company name: y=275, x=216
     // ════════════════════════════════════════════════════════════════════════
     doc.addPage(); pageNum++;
     drawHeader();
 
-    setFont('bold', 12, 0,0,0);
-    txt('Summary', PW/2, 170, 'center');
+    TB(12); t('Summary',PW/2,152,'center');
 
-    let sy = 200;
-    const SL = ML, SR = MR+18;
+    TN(10); t('Line Item Total',36,169); t(f2(total),576,169,'right');
+    ln(36,173,576,173, 0.4,170);
 
-    setFont('normal', 10, 0,0,0);
-    txt('Line Item Total', SL, sy);
-    txt(f2(total), SR, sy, 'right');
-    sy += 4;
-    hline(sy, SL, SR, 0.4, 180);
-    sy += 18;
+    TB(10); t('Replacement Cost Value',36,190); t(fm(total),576,190,'right');
+    ln(36,194,576,194, 1.2,0);          // ONE thick rule between RCV and Net Claim
 
-    setFont('bold', 10, 0,0,0);
-    txt('Replacement Cost Value', SL, sy);
-    txt(fm(total), SR, sy, 'right');
-    sy += 2;
-    hline(sy, SL, SR, 1.2, 0);
-    sy += 14;
-
-    setFont('bold', 10, 0,0,0);
-    txt('Net Claim', SL, sy);
-    txt(fm(total), SR, sy, 'right');
-    sy += 2;
-    hline(sy, SL, SR, 1.2, 0);
-    hline(sy+2, SL, SR, 0.4, 0);
+    TB(10); t('Net Claim',36,207); t(fm(total),576,207,'right');
+    ln(36,211,576,211, 1.2,0);          // thick rule  } double rule only
+    ln(36,213,576,213, 0.5,0);          // thin rule   } after Net Claim
 
     // Signature line
-    hline(sy+80, 200, 420, 0.7, 0);
-    setFont('normal', 10, 0,0,0);
-    txt(coName, 202, sy+94);
+    ln(215,266,395,266, 0.7,0);
+    TN(10); t(coName,216,275);
 
     drawFooter(pageNum);
 
     // ════════════════════════════════════════════════════════════════════════
-    // PAGE — Recap of Taxes (blank)
+    // RECAP OF TAXES (blank page)
+    // "Recap of Taxes" centered bold 12pt: y=138
     // ════════════════════════════════════════════════════════════════════════
     doc.addPage(); pageNum++;
     drawHeader();
-    setFont('bold', 12, 0,0,0);
-    txt('Recap of Taxes', PW/2, 170, 'center');
+    TB(12); t('Recap of Taxes',PW/2,138,'center');
     drawFooter(pageNum);
 
     // ════════════════════════════════════════════════════════════════════════
-    // PAGE — Recap by Room (if rooms used)
+    // RECAP BY ROOM (if rooms exist)
     // ════════════════════════════════════════════════════════════════════════
-    if(rooms.length > 0){
+    if(rooms.length>0){
       doc.addPage(); pageNum++;
       drawHeader();
-      setFont('bold', 12, 0,0,0);
-      txt('Recap by Room', PW/2, 170, 'center');
+      TB(12); t('Recap by Room',PW/2,138,'center');
 
-      let ry = 200;
-      setFont('bold', 9, 0,0,0);
-      txt('Estimate: '+en, ML, ry); ry += 14;
-      txt('Area: '+insured, ML, ry); ry += 18;
+      let ry=165;
+      TB(9); t('Estimate: '+en, 36,ry); ry+=16;
+      TB(9); t('Area: '+insured, 36,ry); ry+=20;
 
       roomGroups.filter(g=>g.items.length>0).forEach(grp=>{
-        const gt = grp.items.reduce((s,i)=>s+calcItem(i),0);
-        const pct = total>0 ? (gt/total*100).toFixed(2)+'%' : '0.00%';
-        setFont('normal', 9, 0,0,0);
-        txt('Area: '+grp.name, ML+12, ry);
-        txt(f2(gt), TOT_R-60, ry, 'right');
-        txt(pct,    TOT_R,    ry, 'right');
-        ry += 14;
+        const gt=grp.items.reduce((s,i)=>s+calcItem(i),0);
+        const pct=total>0?(gt/total*100).toFixed(2)+'%':'0.00%';
+        TN(9);
+        t('Area: '+grp.name, 50,ry);
+        t(f2(gt),  TR-60,ry,'right');
+        t(pct,     TR,   ry,'right');
+        ry+=14;
       });
 
-      hline(ry+2, ML, TOT_R, 0.7, 0); ry += 8;
-      setFont('bold', 9, 0,0,0);
-      txt('Subtotal of Areas', ML+12, ry);
-      txt(f2(total), TOT_R-60, ry, 'right');
-      txt('100.00%', TOT_R, ry, 'right');
-      ry += 14;
-      hline(ry+2, ML, TOT_R, 0.7, 0); ry += 8;
-      txt('Total', ML, ry);
-      txt(f2(total), TOT_R-60, ry, 'right');
-      txt('100.00%', TOT_R, ry, 'right');
+      ln(36,ry+3, TR,ry+3, 0.7,0); ry+=10;
+      TB(9); t('Subtotal of Areas',50,ry); t(f2(total),TR-60,ry,'right'); t('100.00%',TR,ry,'right');
+      ry+=14;
+      ln(36,ry+3, TR,ry+3, 0.7,0); ry+=10;
+      TB(9); t('Total',36,ry); t(f2(total),TR-60,ry,'right'); t('100.00%',TR,ry,'right');
 
       drawFooter(pageNum);
     }
 
     // ════════════════════════════════════════════════════════════════════════
-    // PAGES — Photos
+    // PHOTO PAGES — 8 per page, 2 columns
     // ════════════════════════════════════════════════════════════════════════
-    if(photos.length > 0){
-      const iW=(MR-ML-18)/2, iH=185;
-      for(let i=0; i<photos.length; i+=8){
+    if(photos.length>0){
+      const iW=(576-36-18)/2, iH=185;
+      for(let i=0;i<photos.length;i+=8){
         doc.addPage(); pageNum++;
         drawHeader();
-        const chunk = photos.slice(i,i+8);
+        const chunk=photos.slice(i,i+8);
         chunk.forEach((p,j)=>{
           const col=j%2, row2=Math.floor(j/2);
-          const ix = ML+(col*(iW+18));
-          const iy = HDR_BOTTOM+10+(row2*(iH+22));
-          setFont('normal',9,0,0,0);
-          txt(String(i+j+1), ix, iy+10);
-          try{ doc.addImage(p.src,'JPEG',ix,iy+14,iW,iH); }catch(e){}
+          const ix=36+(col*(iW+18));
+          const iy=90+(row2*(iH+22));
+          TN(9); t(String(i+j+1),ix,iy+8);
+          try{ doc.addImage(p.src,'JPEG',ix,iy+13,iW,iH); }catch(e){}
         });
         drawFooter(pageNum);
       }
     }
 
     // ── Output ────────────────────────────────────────────────────────────────
-    const pdfBlob = doc.output('blob');
-    pdfBlobUrl = URL.createObjectURL(pdfBlob);
-    link.href = pdfBlobUrl;
-    link.setAttribute('download', en+'.pdf');
-    link.textContent = 'Open / Save — '+en+'.pdf';
-    link.style.display = 'inline-block';
-    status.textContent = 'Ready!';
-    status.className = 'status ok';
+    const pdfBlob=doc.output('blob');
+    pdfBlobUrl=URL.createObjectURL(pdfBlob);
+    link.href=pdfBlobUrl;
+    link.setAttribute('download',en+'.pdf');
+    link.textContent='Open / Save — '+en+'.pdf';
+    link.style.display='inline-block';
+    status.textContent='Ready!';
+    status.className='status ok';
 
   } catch(err){
     console.error(err);
-    status.textContent = 'Error: '+err.message;
-    status.className = 'status err';
+    status.textContent='Error: '+err.message;
+    status.className='status err';
   }
   btn.disabled=false; btn.innerHTML='Generate PDF';
 }
