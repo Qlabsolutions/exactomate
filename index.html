@@ -435,7 +435,8 @@ async function generatePDF(){
         doc.setTextColor(0,0,0);
       }
       TB(12); t(coName, 103.5, 56);
-      ln(36,63, 576,63, 0.75,0);
+      // Rule starts at x=103.5 (right of logo area) so logo sits cleanly above it
+      ln(103.5,63, 576,63, 0.75,0);
       TN(9);  t(coEmail,103.5,72);
     }
 
@@ -520,9 +521,10 @@ async function generatePDF(){
     // Column x positions (right-edge, right-aligned text)
     const DL=36;   // description / section label left
     const DT=50;   // description TEXT indent (past item number)
-    // DW: max wrap width for description text, starting at x=DT=50
-    // Must stop well before QR=235: 235 - 50 - 12(gap) = 173pt
-    const DW=173;  // description wrap width
+    // DW: description wrap width from x=DT=50.
+    // QTY right-aligns at QR=235. Longest QTY string e.g. "1,500.00 SF" ≈ 55pt wide at 9pt Times
+    // → QTY text starts at ~x=180. Description must end before x=170 → DW = 170-50 = 120pt
+    const DW=120;  // safe wrap width — description text stays in its column
     const QR=235;  // QTY right
     const MR=325;  // REMOVE right
     const PR=409;  // REPLACE right
@@ -532,18 +534,17 @@ async function generatePDF(){
     const FOOTER_GUARD = 706; // items must not start below this y
 
     function drawColHeader(barTop){
-      // Gray bar
-      fr(36,barTop, 540,20, 238,238,238);
-      ln(36,barTop,     576,barTop,     0.5,140);
-      ln(36,barTop+20,  576,barTop+20,  0.5,140);
+      // NO gray fill — real Xactimate col headers are plain: just top/bottom rules + bold text
+      ln(36,barTop,    576,barTop,    0.6,0);
+      ln(36,barTop+16, 576,barTop+16, 0.6,0);
       TB(9);
-      const ty = barTop+15; // text baseline inside bar
+      const ty = barTop+12; // text baseline inside header row
       t('DESCRIPTION',DL+2,ty);
-      t('QTY',  QR,ty,'right');
-      t('REMOVE',MR,ty,'right');
+      t('QTY',    QR,ty,'right');
+      t('REMOVE', MR,ty,'right');
       t('REPLACE',PR,ty,'right');
-      t('TAX',  XR,ty,'right');
-      t('TOTAL',TR,ty,'right');
+      t('TAX',    XR,ty,'right');
+      t('TOTAL',  TR,ty,'right');
     }
 
     // Build room groups
@@ -559,21 +560,20 @@ async function generatePDF(){
     doc.addPage(); pageNum++;
     drawHeader();
 
-    // Centered title block — estimate name y=124, client y=141 only
-    // (Section label "Main Level" appears below as the bold group header — NOT here)
-    TB(10); t(en,      PW/2,124,'center');
-    TN(10); t(insured, PW/2,141,'center');
+    // Centered title block — 3 lines matching real Xactimate: estimate name, client, area
+    TB(10); t(en,           PW/2,124,'center');
+    TN(10); t(insured,      PW/2,141,'center');
+    TB(10); t('Main Level', PW/2,158,'center');
 
-    let y=158; // after 2nd centered line (client y=141 + ~17pt gap to section label)
+    let y=175; // after 3rd centered line (158 + ~17pt gap to section label)
 
     // newPage: break to a new page, redraw header + col-header, reset y
     function newPage(){
       drawFooter(pageNum);
       doc.addPage(); pageNum++;
       drawHeader();
-      // On overflow pages: section label omitted, col header at top
       drawColHeader(80);
-      y = 80+20+6; // bar bottom + small gap
+      y = 80+16+6; // header height(16) + gap(6)
       TN(9);
     }
 
@@ -587,11 +587,11 @@ async function generatePDF(){
 
       // Section label
       TB(10); t(grp.name, DL, y);
-      y += 7; // label baseline to bar top = ~7pt gap
+      y += 5; // gap from label baseline to header top line
 
-      // Column header bar (bar top = y, text baseline = y+15)
+      // Column header (16pt tall)
       drawColHeader(y);
-      y += 26; // clear past bar (20) + 6pt gap to first item baseline
+      y += 22; // 16pt header + 6pt gap to first item baseline
 
       let secTotal=0;
 
@@ -609,9 +609,8 @@ async function generatePDF(){
 
         if(y + itemH > FOOTER_GUARD) newPage();
 
-        // Item number (gray, 8pt, left of description)
-        doc.setFont('times','normal'); doc.setFontSize(8); doc.setTextColor(130,130,130);
-        t(globalNum+'.', DL, y);
+        // Item number — black, same weight as description text (matches real Xactimate)
+        TN(9); t(globalNum+'.', DL, y);
         globalNum++;
 
         // Description text
