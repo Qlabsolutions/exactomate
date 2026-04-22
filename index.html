@@ -1,7 +1,1505 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>XactGen</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0f1117;--surf:#1a1d27;--surf2:#22263a;--bord:#2e3348;--acc:#2563eb;--acc2:#1d4ed8;--tx:#e8eaf0;--tx2:#9299b0;--tx3:#5a6080;--grn:#22c55e;--red:#ef4444}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.sidebar{background:var(--surf);border-right:1px solid var(--bord);padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{font-size:17px;font-weight:700;color:var(--tx);margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--bord);letter-spacing:-.5px}
+.logo span{color:var(--acc)}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;border:none;background:none;color:var(--tx2);font-family:inherit;font-size:13px;cursor:pointer;width:100%;text-align:left;transition:all .15s}
+.nav-btn:hover{background:var(--surf2);color:var(--tx)}
+.nav-btn.active{background:var(--acc);color:#fff;font-weight:500}
+.nav-sec{font-size:10px;font-weight:600;letter-spacing:1.2px;color:var(--tx3);text-transform:uppercase;padding:12px 11px 5px}
+.main{padding:24px 28px;max-width:1080px}
+.ptitle{font-size:20px;font-weight:700;margin-bottom:5px;letter-spacing:-.5px}
+.psub{font-size:12.5px;color:var(--tx2);margin-bottom:22px}
+.card{background:var(--surf);border:1px solid var(--bord);border-radius:11px;padding:20px 22px;margin-bottom:18px}
+.ctitle{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--tx2);margin-bottom:14px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg.full{grid-column:1/-1}
+label{font-size:11px;font-weight:500;color:var(--tx2);text-transform:uppercase;letter-spacing:.6px}
+input,select{background:var(--bg);border:1px solid var(--bord);border-radius:5px;padding:8px 11px;color:var(--tx);font-family:inherit;font-size:13px;transition:border-color .15s;width:100%}
+input:focus,select:focus{outline:none;border-color:var(--acc)}
+select option{background:var(--surf)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border-radius:5px;border:none;font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .15s;text-decoration:none}
+.bp{background:var(--acc);color:#fff}.bp:hover{background:var(--acc2)}
+.bs{background:var(--surf2);color:var(--tx);border:1px solid var(--bord)}.bs:hover{border-color:var(--acc);color:var(--acc)}
+.bd{background:transparent;color:var(--red);border:1px solid transparent;padding:5px 9px}.bd:hover{background:rgba(239,68,68,.1);border-color:var(--red)}
+.bsm{padding:5px 10px;font-size:11.5px}
+.abar{display:flex;gap:9px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.twrap{overflow-x:auto;border-radius:7px;border:1px solid var(--bord)}
+table.ut{width:100%;border-collapse:collapse;font-size:12.5px}
+table.ut thead{background:var(--surf2)}
+table.ut th{padding:10px 12px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx2);border-bottom:1px solid var(--bord);white-space:nowrap}
+table.ut td{padding:9px 12px;border-bottom:1px solid var(--bord);vertical-align:middle}
+table.ut tr:last-child td{border-bottom:none}
+.tdi{background:transparent;border:1px solid transparent;border-radius:3px;padding:3px 7px;color:var(--tx);font-family:'IBM Plex Mono',monospace;font-size:12px;width:100%}
+.tdi:focus{border-color:var(--acc);outline:none;background:var(--bg)}
+.lirow{display:grid;grid-template-columns:28px 1fr 100px 58px 90px 80px 80px 60px 80px 28px;gap:5px;align-items:center;padding:6px 0;border-bottom:1px solid var(--bord)}
+.lirow:last-child{border-bottom:none}
+.lih{display:grid;grid-template-columns:28px 1fr 100px 58px 90px 80px 80px 60px 80px 28px;gap:5px;padding:5px 0;border-bottom:2px solid var(--bord);margin-bottom:3px}
+.lih span{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--tx3)}
+/* Labor Minimums panel */
+.lm-card{background:var(--surf);border:1px solid var(--bord);border-radius:11px;padding:18px 20px;margin-bottom:18px}
+.lm-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.lm-title{font-size:13px;font-weight:600;color:var(--tx)}
+.lm-toggle-wrap{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--tx2);cursor:pointer}
+.lm-toggle{width:36px;height:20px;background:var(--bord);border-radius:10px;position:relative;transition:.2s;cursor:pointer;border:none;flex-shrink:0}
+.lm-toggle.on{background:var(--grn)}
+.lm-toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
+.lm-toggle.on::after{left:19px}
+.lm-table{width:100%;border-collapse:collapse;font-size:12px}
+.lm-table th{text-align:left;padding:5px 8px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);border-bottom:1px solid var(--bord)}
+.lm-table td{padding:6px 8px;border-bottom:1px solid var(--bord);vertical-align:middle}
+.lm-table tr:last-child td{border-bottom:none}
+.lm-sat{color:var(--grn);font-weight:600}
+.lm-short{color:var(--red);font-weight:600}
+.lm-warn{color:#f59e0b;font-weight:600}
+.lm-min-input{background:var(--bg);border:1px solid var(--bord);border-radius:4px;padding:3px 6px;color:var(--tx);font-family:'IBM Plex Mono',monospace;font-size:11px;width:70px;text-align:right}
+.lm-min-input:focus{outline:none;border-color:var(--acc)}
+.lnum{font-size:10px;color:var(--tx3);font-family:'IBM Plex Mono',monospace;text-align:center}
+.tdis{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--grn);font-weight:500;text-align:right}
+.sbar{background:var(--surf2);border:1px solid var(--bord);border-radius:9px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:12px}
+.si{text-align:center}.slbl{font-size:10.5px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.sval{font-size:19px;font-weight:700;font-family:'IBM Plex Mono',monospace}.sval.g{color:var(--grn)}
+.pgui{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:9px;margin-top:10px}
+.pth{position:relative;aspect-ratio:1;border-radius:7px;overflow:hidden;border:1px solid var(--bord);background:var(--surf2)}
+.pth img{width:100%;height:100%;object-fit:cover}
+.pdel{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.7);border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
+.pdrop{border:2px dashed var(--bord);border-radius:7px;padding:26px;text-align:center;color:var(--tx3);cursor:pointer;transition:all .15s;font-size:12.5px}
+.pdrop:hover{border-color:var(--acc);color:var(--acc);background:rgba(37,99,235,.04)}
+.gen-box{background:var(--surf);border:1px solid var(--bord);border-radius:14px;padding:36px;text-align:center;margin-top:8px}
+.gen-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.gen-sub{font-size:13px;color:var(--tx2);margin-bottom:28px;line-height:1.6}
+.gen-btn-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+.big-btn{background:var(--grn);color:#fff;font-size:15px;padding:13px 32px;border-radius:9px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all .15s;width:220px}
+.big-btn:hover{background:#16a34a}.big-btn:disabled{opacity:.5;cursor:not-allowed}
+.pdf-link{display:none;background:#1d4ed8;color:#fff;font-size:15px;padding:13px 32px;border-radius:9px;font-weight:600;text-align:center;text-decoration:none;width:220px}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.status{font-size:12.5px;color:var(--tx2);margin-top:4px;min-height:18px}
+.status.ok{color:var(--grn)}.status.err{color:var(--red)}
+.iphone-tip{background:rgba(37,99,235,0.1);border:1px solid var(--acc);border-radius:8px;padding:12px 16px;font-size:12.5px;color:var(--tx2);line-height:1.6;margin-top:16px;text-align:left}
+.iphone-tip strong{color:var(--tx)}
+.room-card{background:var(--surf2);border:1px solid var(--bord);border-radius:8px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="logo">X<span>act</span>Gen</div>
+    <div class="nav-sec">Setup</div>
+    <button class="nav-btn active" onclick="nav('company',this)">&#127970; Company Info</button>
+    <button class="nav-btn" onclick="nav('claim',this)">&#128203; Claim Info</button>
+    <div class="nav-sec">Estimate</div>
+    <button class="nav-btn" onclick="nav('pricelist',this)">&#36; Price List</button>
+    <button class="nav-btn" onclick="nav('rooms',this)">&#127968; Rooms</button>
+    <button class="nav-btn" onclick="nav('lineitems',this)">&#128221; Line Items</button>
+    <button class="nav-btn" onclick="nav('photos',this)">&#128247; Photos</button>
+    <div class="nav-sec">Output</div>
+    <button class="nav-btn" onclick="nav('generate',this)">&#11015; Generate PDF</button>
+  </nav>
+
+  <div class="main">
+
+    <!-- COMPANY -->
+    <div id="pg-company">
+      <div class="ptitle">Company Info</div>
+      <div class="psub">Appears in the header of every page.</div>
+      <div class="card">
+        <div class="fg2">
+          <div class="fg full"><label>Company Name</label><input id="co-name" value="Qlab Solutions"/></div>
+          <div class="fg"><label>Email</label><input id="co-email" value="Admin@qlabsolutions.co"/></div>
+          <div class="fg"><label>Phone</label><input id="co-phone" value="786-746-7599"/></div>
+          <div class="fg"><label>Street Address</label><input id="co-addr" value="300 S Biscayne Blvd Unit 610"/></div>
+          <div class="fg"><label>City / State / Zip</label><input id="co-city" value="Miami Florida 33131"/></div>
+          <div class="fg full">
+            <label>Company Logo (top-left of every page)</label>
+            <div class="pdrop" onclick="document.getElementById('logo-in').click()">Click to upload logo PNG/JPG — or leave blank for the NR box</div>
+            <input type="file" id="logo-in" accept="image/*" style="display:none" onchange="loadLogo(event)"/>
+            <div id="logo-prev" style="margin-top:8px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLAIM -->
+    <div id="pg-claim" style="display:none">
+      <div class="ptitle">Claim Info</div>
+      <div class="psub">Insured and estimate details for the cover page.</div>
+      <div class="card">
+        <div class="ctitle">Insured</div>
+        <div class="fg2">
+          <div class="fg"><label>Client / Insured Name</label><input id="insured" value="PIERRE DUJOUR"/></div>
+          <div class="fg"><label>Property Address</label><input id="prop-addr" value="2014 NE 168th St APT 1"/></div>
+          <div class="fg"><label>Property City / State / Zip</label><input id="prop-city" value="N Miami Beach, FL 33162"/></div>
+          <div class="fg"><label>Operator</label><input id="operator" value="ADMIN"/></div>
+          <div class="fg"><label>Estimator</label><input id="estimator" value="Qlab Solutions"/></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ctitle">Estimate Details</div>
+        <div class="fg3">
+          <div class="fg"><label>Type of Estimate</label><input id="type-loss" value="Wind Damage"/></div>
+          <div class="fg"><label>Date Entered</label><input id="date-ent" value="4/8/2026"/></div>
+          <div class="fg"><label>Date Assigned</label><input id="date-assigned" value=""/></div>
+          <div class="fg"><label>Date Est. Completed</label><input id="date-est-comp" value=""/></div>
+          <div class="fg"><label>Date Job Completed</label><input id="date-job-comp" value=""/></div>
+          <div class="fg"><label>Price List Code</label><input id="pl-code" value="FLMI8X_APR26"/></div>
+          <div class="fg"><label>Labor Efficiency</label><input id="pl-type" value="Restoration/Service/Remodel"/></div>
+          <div class="fg full"><label>Estimate Name (filename)</label><input id="est-name" value="PDUJOUR_TARP"/></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRICE LIST -->
+    <div id="pg-pricelist" style="display:none">
+      <div class="ptitle">Price List</div>
+      <div class="psub">Reusable items — add to line items from here.</div>
+      <div class="abar"><button class="btn bp" onclick="addPL()">+ Add Item</button></div>
+      <div class="twrap">
+        <table class="ut"><thead><tr><th>Code</th><th>Description</th><th>Unit</th><th>Remove $</th><th>Replace $</th><th></th></tr></thead>
+        <tbody id="pl-body"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ROOMS -->
+    <div id="pg-rooms" style="display:none">
+      <div class="ptitle">Rooms / Areas</div>
+      <div class="psub">Optional — group line items by room. Enter dimensions to generate room sketches in the PDF.</div>
+      <div class="abar"><button class="btn bp" onclick="addRoom()">+ Add Room</button></div>
+      <div id="rooms-cont"></div>
+    </div>
+
+    <!-- LINE ITEMS -->
+    <div id="pg-lineitems" style="display:none">
+      <div class="ptitle">Line Items</div>
+      <div class="psub">Build the estimate. TAX is a percentage (e.g. 8.5 = 8.5%).</div>
+      <div class="abar">
+        <button class="btn bp" onclick="addLI()">+ Add Line Item</button>
+        <button class="btn bs" onclick="openModal()">From Price List</button>
+      </div>
+      <div class="card" style="padding:10px 14px">
+        <div class="lih">
+          <span>#</span><span>Description</span><span>Room</span><span>Trade</span>
+          <span>Qty / Unit</span><span>Remove</span><span>Replace</span>
+          <span>Tax %</span><span>Total</span><span></span>
+        </div>
+        <div id="li-cont"></div>
+      </div>
+      <div class="sbar">
+        <div class="si"><div class="slbl">Line Items</div><div class="sval" id="s-tot">$0.00</div></div>
+        <div class="si"><div class="slbl">Labor Minimums</div><div class="sval" id="s-lm" style="color:var(--tx2)">$0.00</div></div>
+        <div class="si"><div class="slbl">Replacement Cost Value</div><div class="sval g" id="s-rcv">$0.00</div></div>
+        <div class="si"><div class="slbl">Net Claim</div><div class="sval g" id="s-net">$0.00</div></div>
+      </div>
+    </div>
+
+    <!-- PHOTOS -->
+    <div id="pg-photos" style="display:none">
+      <div class="ptitle">Photos</div>
+      <div class="psub">Upload job photos. Choose how many appear per PDF page.</div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap">
+          <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--tx2)">Photos per page</label>
+          <div style="display:flex;gap:8px">
+            <button class="btn bp" id="ppp-2" onclick="setPhotosPerPage(2)">2</button>
+            <button class="btn bs" id="ppp-4" onclick="setPhotosPerPage(4)">4</button>
+            <button class="btn bs" id="ppp-8" onclick="setPhotosPerPage(8)">8</button>
+          </div>
+          <span id="ppp-desc" style="font-size:12px;color:var(--tx3)">1 column · 2 rows · full width (Xactimate style)</span>
+        </div>
+        <div class="pdrop" onclick="document.getElementById('ph-in').click()">Click to upload photos (JPG / PNG)</div>
+        <input type="file" id="ph-in" multiple accept="image/*" style="display:none" onchange="loadPh(event)"/>
+        <div class="pgui" id="ph-grid"></div>
+      </div>
+    </div>
+
+    <!-- GENERATE -->
+    <div id="pg-generate" style="display:none">
+      <div class="ptitle">Generate PDF</div>
+      <div class="psub">Produces a pixel-perfect Xactimate-style estimate PDF.</div>
+
+      <!-- Labor Minimums Settings -->
+      <div class="lm-card">
+        <div class="lm-header">
+          <div class="lm-title">Labor Minimums</div>
+          <div class="lm-toggle-wrap" onclick="toggleLaborMins()">
+            <button class="lm-toggle on" id="lm-toggle-btn"></button>
+            <span id="lm-toggle-lbl">Applied</span>
+          </div>
+        </div>
+        <div id="lm-panel"></div>
+      </div>
+
+      <div class="gen-box">
+        <div class="gen-title">Ready to generate</div>
+        <div class="gen-sub">Click Generate, then tap <strong style="color:var(--tx)">Open PDF</strong> to view and save.</div>
+        <div class="gen-btn-wrap">
+          <button class="big-btn" id="gen-btn" onclick="generatePDF()">Generate PDF</button>
+          <a id="pdf-link" class="pdf-link" target="_blank">Open PDF</a>
+          <div class="status" id="gen-status"></div>
+        </div>
+        <div class="iphone-tip">
+          <strong>On iPhone:</strong> Tap Generate, then Open PDF. In Safari tap <strong>Share</strong> then <strong>Save to Files</strong>.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:999;align-items:center;justify-content:center">
+  <div style="background:var(--surf);border:1px solid var(--bord);border-radius:11px;width:90%;max-width:580px;max-height:80vh;overflow:auto;padding:22px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-weight:600;font-size:15px">Add from Price List</div>
+      <button class="btn bs bsm" onclick="closeModal()">X</button>
+    </div>
+    <div class="twrap">
+      <table class="ut"><thead><tr><th>Description</th><th>Unit</th><th>Remove</th><th>Replace</th><th></th></tr></thead>
+      <tbody id="modal-body"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<script>
+const {jsPDF} = window.jspdf;
+
+// ── Data ─────────────────────────────────────────────────────────────────────
+let pl = [
+  {id:1, code:'TARP-REM',  desc:'Remove Tarp - all-purpose poly - per sq ft (labor and material)', unit:'SF', rem:0.12, rep:0},
+  {id:2, code:'TARP-INS',  desc:'Install Tarp - all-purpose poly - per sq ft (labor and material)', unit:'SF', rem:0, rep:1.50},
+  {id:3, code:'GEN-LAB',   desc:'General Laborer - per hour', unit:'HR', rem:0, rep:55.06},
+  {id:4, code:'ROOF-TRK',  desc:'Roof tarping - heavy duty poly - per sq ft', unit:'SF', rem:0, rep:2.10},
+  {id:5, code:'DEMO-DRY',  desc:'Drywall - remove and dispose - per sq ft', unit:'SF', rem:0.55, rep:0},
+  {id:6, code:'INSUL-BAT', desc:'Insulation - batt type - per sq ft', unit:'SF', rem:0, rep:1.85},
+  {id:7, code:'PAINT-INT', desc:'Paint interior walls - per sq ft', unit:'SF', rem:0, rep:0.85},
+  {id:8, code:'FLOOR-TIL', desc:'Floor tile - remove and replace - per sq ft', unit:'SF', rem:0.45, rep:6.50},
+  {id:9, code:'WNDW-BRD',  desc:'Board up window opening - per sq ft', unit:'SF', rem:0, rep:3.20},
+  {id:10,code:'CLEAN-GEN', desc:'General cleaning - per hour', unit:'HR', rem:0, rep:45.00},
+];
+let li = [
+  {id:1,  room:'', trade:'TMP', desc:'Remove Tarp - all-purpose poly - per sq ft (labor and material)', qty:1500, unit:'SF', rem:0.12, rep:0,    tax:0},
+  {id:2,  room:'', trade:'TMP', desc:'Install Tarp - all-purpose poly - per sq ft (labor and material)', qty:1500, unit:'SF', rem:0,    rep:1.50, tax:0},
+  {id:3,  room:'', trade:'LAB', desc:'General Laborer - per hour',                                      qty:3,    unit:'HR', rem:0,    rep:55.06,tax:0},
+  {id:4,  room:'', trade:'RFG', desc:'Roof tarping - heavy duty poly - per sq ft',                      qty:500,  unit:'SF', rem:0,    rep:2.10, tax:0},
+  {id:5,  room:'', trade:'DRY', desc:'Drywall - remove and dispose - per sq ft',                        qty:200,  unit:'SF', rem:0.55, rep:0,    tax:0},
+  {id:6,  room:'', trade:'INS', desc:'Insulation - batt type - per sq ft',                              qty:150,  unit:'SF', rem:0,    rep:1.85, tax:0},
+  {id:7,  room:'', trade:'PNT', desc:'Paint interior walls - per sq ft',                                qty:400,  unit:'SF', rem:0,    rep:0.85, tax:0},
+  {id:8,  room:'', trade:'FCC', desc:'Floor tile - remove and replace - per sq ft',                     qty:80,   unit:'SF', rem:0.45, rep:6.50, tax:0},
+  {id:9,  room:'', trade:'TMP', desc:'Board up window opening - per sq ft',                             qty:32,   unit:'SF', rem:0,    rep:3.20, tax:0},
+  {id:10, room:'', trade:'CLN', desc:'General cleaning - per hour',                                     qty:4,    unit:'HR', rem:0,    rep:45.00,tax:0},
+];
+let rooms = [];
+let photos = [];
+let photosPerPage = 2; // default: Xactimate style
+let logoB64 = null;
+let plC=20, liC=20, roomC=0;
+let pdfBlobUrl = null;
+let applyLaborMins = true;
+
+// Labor minimum config — amounts are editable by user (regional averages as defaults)
+// laborPct = fraction of unit cost (rem+rep) that is labor
+const laborMinsConfig = {
+  TMP: { name:'Temporary Repairs', min:175.00, laborPct:0.80 },
+  RFG: { name:'Roofing',           min:350.00, laborPct:0.55 },
+  LAB: { name:'General Labor',     min:165.00, laborPct:1.00 },
+  DRY: { name:'Drywall',           min:166.00, laborPct:0.85 },
+  INS: { name:'Insulation',        min:150.00, laborPct:0.50 },
+  PNT: { name:'Painting',          min:175.00, laborPct:0.65 },
+  FCC: { name:'Floor Covering - Ceramic', min:200.00, laborPct:0.40 },
+  CLN: { name:'Cleaning',          min:135.00, laborPct:1.00 },
+};
+
+const g   = id => document.getElementById(id).value.trim();
+const $   = id => document.getElementById(id);
+const f2  = n  => (+n).toFixed(2);
+const fm  = n  => '$' + f2(n);
+const fq  = (q,u) => (+q).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' ' + u;
+const esc = s  => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const calcItem = item => (item.qty * item.rem) + (item.qty * item.rep) + (item.qty * item.rep * item.tax / 100);
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+function nav(name, btn){
+  ['company','claim','pricelist','rooms','lineitems','photos','generate']
+    .forEach(p => $('pg-'+p).style.display = p===name ? '' : 'none');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='pricelist') renderPL();
+  if(name==='rooms')     renderRooms();
+  if(name==='lineitems') renderLI();
+  if(name==='photos')    renderPhUI();
+  if(name==='generate'){ $('pdf-link').style.display='none'; $('gen-status').textContent=''; renderLaborMinsPanel(); }
+}
+
+// ── Logo ─────────────────────────────────────────────────────────────────────
+function loadLogo(e){
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    logoB64 = ev.target.result;
+    $('logo-prev').innerHTML = `<img src="${logoB64}" style="max-height:55px;border-radius:4px;border:1px solid var(--bord)"/>`;
+  };
+  r.readAsDataURL(f);
+}
+
+// ── Price List ───────────────────────────────────────────────────────────────
+function renderPL(){
+  $('pl-body').innerHTML = pl.map(p => `<tr>
+    <td><input class="tdi" style="width:88px" value="${esc(p.code)}" onchange="upPL(${p.id},'code',this.value)"/></td>
+    <td><input class="tdi" style="width:100%" value="${esc(p.desc)}" onchange="upPL(${p.id},'desc',this.value)"/></td>
+    <td><input class="tdi" style="width:40px" value="${p.unit}" onchange="upPL(${p.id},'unit',this.value)"/></td>
+    <td><input class="tdi" style="width:68px" type="number" step="0.01" value="${p.rem}" onchange="upPL(${p.id},'rem',+this.value)"/></td>
+    <td><input class="tdi" style="width:68px" type="number" step="0.01" value="${p.rep}" onchange="upPL(${p.id},'rep',+this.value)"/></td>
+    <td><button class="btn bd bsm" onclick="delPL(${p.id})">X</button></td>
+  </tr>`).join('');
+}
+function upPL(id,f,v){ const i=pl.find(x=>x.id===id); if(i) i[f]=v; }
+function delPL(id){ pl=pl.filter(x=>x.id!==id); renderPL(); }
+function addPL(){ plC++; pl.push({id:plC,code:'NEW-'+plC,desc:'New item',unit:'SF',rem:0,rep:0}); renderPL(); }
+
+// ── Rooms ────────────────────────────────────────────────────────────────────
+function addRoom(){ roomC++; rooms.push({id:roomC, name:'Room '+roomC, lengthFt:0,lengthIn:0, widthFt:0,widthIn:0, heightFt:8,heightIn:0}); renderRooms(); }
+function renderRooms(){
+  $('rooms-cont').innerHTML = rooms.length===0
+    ? '<div style="color:var(--tx3);font-size:13px;padding:8px 0">No rooms — all items go under Main Level.</div>'
+    : rooms.map(r=>`
+      <div class="room-card" style="flex-direction:column;align-items:stretch;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <input class="tdi" style="flex:1;font-size:13px" value="${esc(r.name)}" onchange="upRoom(${r.id},'name',this.value)" placeholder="Room name"/>
+          <button class="btn bd bsm" onclick="delRoom(${r.id})">Remove</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          <div class="fg">
+            <label style="font-size:10px">Length (ft / in)</label>
+            <div style="display:flex;gap:4px">
+              <input class="tdi" type="number" min="0" style="width:52px" value="${r.lengthFt}" onchange="upRoom(${r.id},'lengthFt',+this.value)" placeholder="ft"/>
+              <input class="tdi" type="number" min="0" max="11" style="width:40px" value="${r.lengthIn}" onchange="upRoom(${r.id},'lengthIn',+this.value)" placeholder="in"/>
+            </div>
+          </div>
+          <div class="fg">
+            <label style="font-size:10px">Width (ft / in)</label>
+            <div style="display:flex;gap:4px">
+              <input class="tdi" type="number" min="0" style="width:52px" value="${r.widthFt}" onchange="upRoom(${r.id},'widthFt',+this.value)" placeholder="ft"/>
+              <input class="tdi" type="number" min="0" max="11" style="width:40px" value="${r.widthIn}" onchange="upRoom(${r.id},'widthIn',+this.value)" placeholder="in"/>
+            </div>
+          </div>
+          <div class="fg">
+            <label style="font-size:10px">Height (ft / in)</label>
+            <div style="display:flex;gap:4px">
+              <input class="tdi" type="number" min="0" style="width:52px" value="${r.heightFt}" onchange="upRoom(${r.id},'heightFt',+this.value)" placeholder="ft"/>
+              <input class="tdi" type="number" min="0" max="11" style="width:40px" value="${r.heightIn}" onchange="upRoom(${r.id},'heightIn',+this.value)" placeholder="in"/>
+            </div>
+          </div>
+        </div>
+      </div>`).join('');
+}
+function upRoom(id,f,v){ const r=rooms.find(x=>x.id===id); if(r) r[f]=v; }
+function delRoom(id){ rooms=rooms.filter(x=>x.id!==id); renderRooms(); }
+
+// ── Trade options helper ──────────────────────────────────────────────────────
+const TRADES = ['','TMP','RFG','LAB','DRY','INS','PNT','FCC','CLN'];
+const TRADE_LABELS = {
+  '':'—', TMP:'TMP', RFG:'RFG', LAB:'LAB',
+  DRY:'DRY', INS:'INS', PNT:'PNT', FCC:'FCC', CLN:'CLN'
+};
+function tradeOpts(sel){
+  return TRADES.map(t=>`<option value="${t}" ${sel===t?'selected':''}>${TRADE_LABELS[t]}</option>`).join('');
+}
+
+// ── Labor Minimums Logic ──────────────────────────────────────────────────────
+function calcLaborMinAdjustments(){
+  // Sum labor generated per trade across all line items
+  const laborByTrade = {};
+  li.forEach(item => {
+    const code = item.trade;
+    if(!code || !laborMinsConfig[code]) return;
+    const cfg = laborMinsConfig[code];
+    const laborPerUnit = (item.rem + item.rep) * cfg.laborPct;
+    laborByTrade[code] = (laborByTrade[code] || 0) + (item.qty * laborPerUnit);
+  });
+
+  // Compare each trade's labor total to its minimum
+  const adjustments = [];
+  Object.entries(laborMinsConfig).forEach(([code, cfg]) => {
+    const laborGenerated = laborByTrade[code] || 0;
+    const shortfall = cfg.min - laborGenerated;
+    adjustments.push({
+      code,
+      name:          cfg.name,
+      min:           cfg.min,
+      laborGenerated,
+      adjustment:    shortfall > 0 ? shortfall : 0,
+      satisfied:     shortfall <= 0,
+    });
+  });
+  return adjustments;
+}
+
+function laborMinsTotal(){
+  if(!applyLaborMins) return 0;
+  return calcLaborMinAdjustments()
+    .filter(a => a.adjustment > 0)
+    .reduce((s,a) => s + a.adjustment, 0);
+}
+
+function toggleLaborMins(){
+  applyLaborMins = !applyLaborMins;
+  const btn = $('lm-toggle-btn');
+  btn.classList.toggle('on', applyLaborMins);
+  $('lm-toggle-lbl').textContent = applyLaborMins ? 'Applied' : 'Off';
+  renderLaborMinsPanel();
+  renderLI(); // refresh summary bar
+}
+
+function updateLMMin(code, val){
+  if(laborMinsConfig[code]) laborMinsConfig[code].min = +val || 0;
+  renderLaborMinsPanel();
+  renderLI();
+}
+
+function renderLaborMinsPanel(){
+  const panel = $('lm-panel');
+  if(!panel) return;
+  const adjustments = calcLaborMinAdjustments();
+  const active = adjustments.filter(a => {
+    // Only show trades that appear in the current estimate
+    return li.some(item => item.trade === a.code);
+  });
+
+  if(active.length === 0){
+    panel.innerHTML = '<div style="color:var(--tx3);font-size:12.5px">No trade categories assigned to line items yet.</div>';
+    return;
+  }
+
+  const disabled = !applyLaborMins ? 'style="opacity:.45;pointer-events:none"' : '';
+  panel.innerHTML = `
+    <div ${disabled}>
+      <table class="lm-table">
+        <thead><tr>
+          <th>Trade</th><th>Category</th>
+          <th style="text-align:right">Minimum $</th>
+          <th style="text-align:right">Labor Generated</th>
+          <th style="text-align:right">Adjustment</th>
+          <th style="text-align:center">Status</th>
+        </tr></thead>
+        <tbody>
+          ${active.map(a => {
+            const statusClass = a.satisfied ? 'lm-sat' : (a.laborGenerated > 0 ? 'lm-warn' : 'lm-short');
+            const statusText  = a.satisfied ? '✓ Satisfied' : (a.laborGenerated > 0 ? '⚠ Partial' : '✗ Triggered');
+            return `<tr>
+              <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600">${a.code}</td>
+              <td style="color:var(--tx2)">${a.name}</td>
+              <td style="text-align:right">
+                <input class="lm-min-input" type="number" step="0.01"
+                  value="${f2(a.min)}" onchange="updateLMMin('${a.code}',this.value)"/>
+              </td>
+              <td style="text-align:right;font-family:'IBM Plex Mono',monospace">${fm(a.laborGenerated)}</td>
+              <td style="text-align:right;font-family:'IBM Plex Mono',monospace;font-weight:600;color:${a.adjustment>0?'var(--red)':'var(--grn)'}">${a.adjustment>0?'+':''} ${fm(a.adjustment)}</td>
+              <td style="text-align:center" class="${statusClass}">${statusText}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+      ${applyLaborMins ? `<div style="margin-top:10px;text-align:right;font-size:12px;color:var(--tx2)">
+        Total Labor Min. Adjustments: <strong style="color:var(--tx);font-family:'IBM Plex Mono',monospace">${fm(laborMinsTotal())}</strong>
+      </div>` : ''}
+    </div>`;
+}
+
+// ── Line Items ───────────────────────────────────────────────────────────────
+function roomOpts(sel){
+  return `<option value="">Main Level</option>` +
+    rooms.map(r=>`<option value="${r.id}" ${String(sel)===String(r.id)?'selected':''}>${esc(r.name)}</option>`).join('');
+}
+function renderLI(){
+  $('li-cont').innerHTML = li.map((item,i) => `
+    <div class="lirow">
+      <div class="lnum">${i+1}</div>
+      <input class="tdi" style="width:100%" value="${esc(item.desc)}" onchange="upLI(${item.id},'desc',this.value)"/>
+      <select class="tdi" style="padding:3px 4px;font-size:11px" onchange="upLI(${item.id},'room',this.value)">${roomOpts(item.room)}</select>
+      <select class="tdi" style="padding:3px 4px;font-size:11px;font-family:'IBM Plex Mono',monospace" onchange="upLI(${item.id},'trade',this.value)">${tradeOpts(item.trade||'')}</select>
+      <div style="display:flex;gap:3px">
+        <input class="tdi" style="width:52px" type="number" step="0.01" value="${item.qty}" onchange="upLI(${item.id},'qty',+this.value)"/>
+        <input class="tdi" style="width:32px" value="${item.unit}" onchange="upLI(${item.id},'unit',this.value)"/>
+      </div>
+      <input class="tdi" type="number" step="0.01" value="${item.rem}" onchange="upLI(${item.id},'rem',+this.value)"/>
+      <input class="tdi" type="number" step="0.01" value="${item.rep}" onchange="upLI(${item.id},'rep',+this.value)"/>
+      <input class="tdi" type="number" step="0.01" value="${item.tax}" onchange="upLI(${item.id},'tax',+this.value)" title="Tax %"/>
+      <div class="tdis">${fm(calcItem(item))}</div>
+      <button class="btn bd" style="padding:3px 6px;font-size:11px" onclick="delLI(${item.id})">X</button>
+    </div>`).join('');
+  const tot  = li.reduce((s,i)=>s+calcItem(i),0);
+  const lmAdj = laborMinsTotal();
+  const rcv  = tot + lmAdj;
+  $('s-tot').textContent = fm(tot);
+  $('s-lm').textContent  = applyLaborMins && lmAdj > 0 ? '+'+fm(lmAdj) : fm(0);
+  $('s-lm').style.color  = applyLaborMins && lmAdj > 0 ? 'var(--red)' : 'var(--tx3)';
+  $('s-rcv').textContent = fm(rcv);
+  $('s-net').textContent = fm(rcv);
+}
+function upLI(id,f,v){ const i=li.find(x=>x.id===id); if(i){i[f]=v; renderLI(); renderLaborMinsPanel();} }
+function delLI(id){ li=li.filter(x=>x.id!==id); renderLI(); renderLaborMinsPanel(); }
+function addLI(){ liC++; li.push({id:liC,room:'',trade:'',desc:'New line item',qty:1,unit:'SF',rem:0,rep:0,tax:0}); renderLI(); }
+
+function openModal(){
+  $('modal').style.display='flex';
+  $('modal-body').innerHTML = pl.map(p=>`<tr>
+    <td>${esc(p.desc)}</td><td>${p.unit}</td><td>${f2(p.rem)}</td><td>${f2(p.rep)}</td>
+    <td><button class="btn bp bsm" onclick="pickPL(${p.id})">Add</button></td>
+  </tr>`).join('');
+}
+function closeModal(){ $('modal').style.display='none'; }
+function pickPL(id){
+  const p=pl.find(x=>x.id===id); if(!p) return;
+  liC++; li.push({id:liC,room:'',trade:'',desc:p.desc,qty:1,unit:p.unit,rem:p.rem,rep:p.rep,tax:0});
+  closeModal(); renderLI();
+}
+
+// ── Photos ───────────────────────────────────────────────────────────────────
+function loadPh(e){ Array.from(e.target.files).forEach(f=>{const r=new FileReader();r.onload=ev=>{photos.push({src:ev.target.result});renderPhUI();};r.readAsDataURL(f);}); }
+function renderPhUI(){ $('ph-grid').innerHTML=photos.map((p,i)=>`<div class="pth"><img src="${p.src}"/><button class="pdel" onclick="delPh(${i})">X</button></div>`).join(''); }
+function delPh(i){ photos.splice(i,1); renderPhUI(); }
+
+function setPhotosPerPage(n){
+  photosPerPage = n;
+  // Update button styles
+  [2,4,8].forEach(v => {
+    const btn = $('ppp-'+v);
+    if(!btn) return;
+    btn.className = v===n ? 'btn bp' : 'btn bs';
+  });
+  // Update description
+  const descs = {
+    2: '1 column · 2 rows · full width (Xactimate style)',
+    4: '2 columns · 2 rows · medium',
+    8: '2 columns · 4 rows · compact',
+  };
+  const d = $('ppp-desc');
+  if(d) d.textContent = descs[n] || '';
+}
+
+// ── Room Dimension Helpers ────────────────────────────────────────────────────
+function toFt(ft, inches){ return (+ft||0) + (+inches||0)/12; }
+function hasDims(r){ return (r.lengthFt||0)+(r.lengthIn||0)+(r.widthFt||0)+(r.widthIn||0) > 0; }
+
+function calcRoomAreas(r){
+  const L = toFt(r.lengthFt, r.lengthIn);
+  const W = toFt(r.widthFt,  r.widthIn);
+  const H = toFt(r.heightFt, r.heightIn);
+  const ceiling = L * W;
+  const floor   = ceiling;
+  const walls   = 2 * (L + W) * H;
+  const perim   = 2 * (L + W);
+  return {
+    L, W, H,
+    walls,
+    wallsAndCeiling: walls + ceiling,
+    flooringSY: floor / 9,
+    ceilPerimeter: perim,
+    ceiling,
+    floor,
+    floorPerimeter: perim,
+  };
+}
+
+// Format decimal feet to feet+inches string e.g. 10.833 → "10' 10\""
+function ftStr(decFt){
+  const totalIn = Math.round(decFt * 12);
+  const ft = Math.floor(totalIn / 12);
+  const inches = totalIn % 12;
+  return inches > 0 ? `${ft}' ${inches}"` : `${ft}'`;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  PDF GENERATION — pixel-exact Xactimate clone
+//  All coordinates verified against real Xactimate PDFs via pdfplumber
+//  jsPDF: unit=pt, origin TOP-LEFT, y increases DOWNWARD, Letter=612×792
+// ══════════════════════════════════════════════════════════════════════════════
+async function generatePDF(){
+  const btn=$('gen-btn'), status=$('gen-status'), link=$('pdf-link');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Building...';
+  status.textContent=''; status.className='status'; link.style.display='none';
+  if(pdfBlobUrl){ URL.revokeObjectURL(pdfBlobUrl); pdfBlobUrl=null; }
+
+  try {
+    const doc = new jsPDF({unit:'pt', format:'letter'});
+    const PW=612;
+
+    // ── Field values ──────────────────────────────────────────────────────────
+    const en       = g('est-name');
+    const coName   = g('co-name');
+    const coEmail  = g('co-email');
+    const coAddr   = g('co-addr');
+    const coCity   = g('co-city');
+    const insured  = g('insured');
+    const propAddr = g('prop-addr');
+    const propCity = g('prop-city');
+    const operator = g('operator');
+    const estimator= g('estimator');
+    const typeLoss = g('type-loss');
+    const dateEnt  = g('date-ent');
+    const dateAssn = g('date-assigned');
+    const dateEstC = g('date-est-comp');
+    const dateJobC = g('date-job-comp');
+    const plCode   = g('pl-code');
+    const plType   = g('pl-type');
+    const total    = li.reduce((s,i)=>s+calcItem(i),0);
+
+    // ── Labor minimum adjustments (computed once, used in line items + summary) ──
+    const lmAdjs   = applyLaborMins ? calcLaborMinAdjustments().filter(a=>a.adjustment>0) : [];
+    const lmTotal  = lmAdjs.reduce((s,a)=>s+a.adjustment, 0);
+    const grandTotal = total + lmTotal;
+
+    // ── Drawing helpers ───────────────────────────────────────────────────────
+    const TN = sz => { doc.setFont('times','normal'); doc.setFontSize(sz); doc.setTextColor(0,0,0); };
+    const TB = sz => { doc.setFont('times','bold');   doc.setFontSize(sz); doc.setTextColor(0,0,0); };
+    const t  = (s,x,y,a='left') => doc.text(String(s),x,y,{align:a});
+    const ln = (x1,y1,x2,y2,w=0.5,gr=0) => { doc.setLineWidth(w); doc.setDrawColor(gr,gr,gr); doc.line(x1,y1,x2,y2); };
+    const fr = (x,y,w,h,r,gg,b) => { doc.setFillColor(r,gg,b); doc.rect(x,y,w,h,'F'); };
+
+    let pageNum=0;
+
+    // ════════════════════════════════════════════════════════════════════════
+    // HEADER — measured from real Xactimate PDF (KATHALEEN_WD)
+    // NR box:      x=36, y=14, w=52, h=46  (green 31,78,31)
+    // NR text:     center x=62, baseline y=51, bold 20pt white
+    // Company:     x=103.5, baseline y=56, bold 12pt black
+    // H-rule:      y=63, x=36–576, w=0.75
+    // Email:       x=103.5, baseline y=72, normal 9pt
+    // ════════════════════════════════════════════════════════════════════════
+    function drawHeader(){
+      // Logo / NR box — lowered to y=22 to match Xactimate positioning
+      if(logoB64){
+        try{ doc.addImage(logoB64,'PNG',36,22,52,42); }catch(e){}
+      } else {
+        fr(36,22,52,42, 31,78,31);
+        doc.setFont('times','bold'); doc.setFontSize(20); doc.setTextColor(255,255,255);
+        t('NR',62,51,'center');
+        doc.setTextColor(0,0,0);
+      }
+      // Company name — vertically centered with logo
+      TB(13); t(coName, 103.5, 42);
+      // Horizontal rule
+      ln(103.5,56, 576,56, 0.75,0);
+      // Address + Email below rule (two lines)
+      TN(9);
+      t(coAddr + (coCity ? ',  ' + coCity : ''), 103.5, 66);
+      t('Email: ' + coEmail, 103.5, 77);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // FOOTER — measured from real Xactimate PDF
+    // Rule:  y=714, x=18–594, w=0.5, gray=160
+    // Text:  baseline y=728, 10pt normal
+    //   estimate name: x=27 left
+    //   date:          x=306 center
+    //   page:          x=576 right-align
+    // ════════════════════════════════════════════════════════════════════════
+    function drawFooter(n){
+      ln(18,714, 594,714, 0.5,160);
+      TN(10);
+      t(en,    27,  728);
+      t(dateEnt,306,728,'center');
+      t('Page: '+n, 576,728,'right');
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // PAGE 1 — Cover page
+    // Measured from KATHALEEN_WD (top-down baselines):
+    //   Left labels right-align at x=112.5, values left at x=127.1
+    //   Date right labels at x=322.6, date values at x=333.0
+    //   Estimator email label at x=435.8, value at x=446.6
+    // ════════════════════════════════════════════════════════════════════════
+    pageNum++;
+    drawHeader();
+
+    const LR=112.5, LV=127.1;   // left column: label right, value left
+    const DR=322.6, DV=333.0;   // date right column: label right, value left
+    const ER=435.8, EV=446.6;   // email right col (estimator row only)
+
+    TN(10);
+    // Client y=119, Property y=133, city y=146
+    t('Client:',   LR,119,'right'); t(insured,  LV,119);
+    t('Property:', LR,133,'right'); t(propAddr, LV,133);
+    t(propCity, LV,146);
+
+    // Operator y=178 (gap ~32 after city)
+    t('Operator:', LR,178,'right'); t(operator, LV,178);
+
+    // Estimator y=208 (gap ~30), with E-mail on right
+    t('Estimator:', LR,208,'right'); t(estimator,LV,208);
+    t('E-mail:',    ER,208,'right'); t(coEmail,  EV,208);
+
+    // Business y=221, city y=235
+    t('Business:', LR,221,'right'); t(coAddr,   LV,221);
+    t(coCity, LV,235);
+
+    // Type of Estimate y=265 (gap ~30)
+    t('Type of Estimate:', LR,265,'right'); t(typeLoss,LV,265);
+
+    // Dates y=278, y=292
+    t('Date Entered:',      LR,278,'right'); t(dateEnt, LV,278);
+    t('Date Assigned:',     DR,278,'right'); t(dateAssn,DV,278);
+    t('Date Est. Completed:', LR,292,'right'); t(dateEstC,LV,292);
+    t('Date Job Completed:', DR,292,'right'); t(dateJobC,DV,292);
+
+    // Price list y=323, y=336, y=349 (gap ~31)
+    t('Price List:',       LR,323,'right'); t(plCode,LV,323);
+    t('Labor Efficiency:', LR,336,'right'); t(plType,LV,336);
+    t('Estimate:',         LR,349,'right'); t(en,    LV,349);
+
+    drawFooter(pageNum);
+
+    // ════════════════════════════════════════════════════════════════════════
+    // PAGE 2+ — Line Items
+    // Measured from KATHALEEN_WD:
+    //   Centered headings: est-name y=124, client y=141, area y=158
+    //   Section label: x=36, y=172, bold 10pt
+    //   Col header bar: fillRect(36, 179, 540, 20), text baseline y=194
+    //   First item baseline: y=213
+    //   Col right-edges: QTY=235, REM=325, REP=409, TAX=493, TOT=576
+    //   Description: starts x=36 (item num) + x=50 (text), wrap 185pt
+    //   Row spacing: 16pt single-line, 14pt after multi-line continuation
+    //   Section total: last item y + 22
+    //   Total rows: 23pt apart
+    //   Footer guard: don't draw below y=706
+    // ════════════════════════════════════════════════════════════════════════
+
+    // Column x positions (right-edge, right-aligned text)
+    const DL=36;   // description / section label left
+    const DT=50;   // description TEXT indent (past item number)
+    // DW: description wrap width from x=DT=50.
+    // QTY right-aligns at QR=235. Longest QTY string e.g. "1,500.00 SF" ≈ 55pt wide at 9pt Times
+    // → QTY text starts at ~x=180. Description must end before x=170 → DW = 170-50 = 120pt
+    const DW=120;  // safe wrap width — description text stays in its column
+    const QR=235;  // QTY right
+    const MR=325;  // REMOVE right
+    const PR=409;  // REPLACE right
+    const XR=493;  // TAX right
+    const TR=576;  // TOTAL right
+
+    const FOOTER_GUARD = 706; // items must not start below this y
+
+    function drawColHeader(baselineY){
+      // Real Xactimate: bold 9pt text, then a single underline rule 4pt below baseline
+      // NO filled bar, NO top rule — just text + underline
+      TB(9);
+      t('DESCRIPTION', DL, baselineY);
+      t('QTY',    QR, baselineY, 'right');
+      t('REMOVE', MR, baselineY, 'right');
+      t('REPLACE',PR, baselineY, 'right');
+      t('TAX',    XR, baselineY, 'right');
+      t('TOTAL',  TR, baselineY, 'right');
+      ln(36, baselineY+4, 576, baselineY+4, 0.6, 0);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // ROOM SKETCH DRAWING HELPERS
+    // Inline sketch: nested rectangles + dimension lines with ticks/arrows
+    // Outer = inner + 8" each side (4" wall each side)
+    // Length = horizontal axis, Width = vertical axis (no rotation)
+    // ════════════════════════════════════════════════════════════════════════
+
+    // Draw a dimension line with tick marks (outer style) or arrows (inner style)
+    // axis: 'h'=horizontal, 'v'=vertical
+    // x1,y1 = start, x2,y2 = end (in PDF coords)
+    // label: string to center in the line gap
+    // style: 'tick' (outer, plain ticks) or 'arrow' (inner, arrowheads)
+    function drawDimLine(x1,y1,x2,y2,label,style,fontSize){
+      doc.setDrawColor(0,0,0);
+      doc.setLineWidth(0.4);
+      const isH = Math.abs(y2-y1) < Math.abs(x2-x1);
+      const cx = (x1+x2)/2, cy = (y1+y2)/2;
+      const TICK = 3;   // tick half-length in pt
+      const ARW  = 4;   // arrowhead size
+
+      if(isH){
+        // Measure label width to create gap
+        doc.setFont('times','normal'); doc.setFontSize(fontSize||5.8);
+        const lw = doc.getTextWidth(label) + 3;
+        const gx1 = cx - lw/2, gx2 = cx + lw/2;
+        // Left segment
+        doc.line(x1, y1, gx1, y1);
+        // Right segment
+        doc.line(gx2, y1, x2, y1);
+        // Label centered
+        doc.text(label, cx, y1+1.8, {align:'center'});
+        // End marks
+        if(style==='tick'){
+          doc.line(x1,y1-TICK, x1,y1+TICK);
+          doc.line(x2,y1-TICK, x2,y1+TICK);
+        } else {
+          // Arrow pointing inward: left side points right, right side points left
+          doc.line(x1,y1, x1+ARW,y1-ARW/2); doc.line(x1,y1, x1+ARW,y1+ARW/2);
+          doc.line(x2,y1, x2-ARW,y1-ARW/2); doc.line(x2,y1, x2-ARW,y1+ARW/2);
+        }
+      } else {
+        // Vertical
+        doc.setFont('times','normal'); doc.setFontSize(fontSize||5.8);
+        const lh = (fontSize||5.8)*1.1 + 2;
+        const gy1 = cy - lh/2, gy2 = cy + lh/2;
+        doc.line(x1,y1, x1,gy1);
+        doc.line(x1,gy2, x1,y2);
+        // Rotate text 90° for vertical label
+        doc.text(label, x1+1.8, cy, {angle:270, align:'center'});
+        if(style==='tick'){
+          doc.line(x1-TICK,y1, x1+TICK,y1);
+          doc.line(x1-TICK,y2, x1+TICK,y2);
+        } else {
+          doc.line(x1,y1, x1-ARW/2,y1+ARW); doc.line(x1,y1, x1+ARW/2,y1+ARW);
+          doc.line(x1,y2, x1-ARW/2,y2-ARW); doc.line(x1,y2, x1+ARW/2,y2-ARW);
+        }
+      }
+    }
+
+    // Draw the inline room sketch (small, before col header)
+    // skX, skY = top-left origin of sketch bounding box
+    // maxW, maxH = maximum dimensions allowed (sketch scales to fit)
+    function drawRoomSketch(room, skX, skY, maxW, maxH){
+      const areas = calcRoomAreas(room);
+      const L = areas.L, W = areas.W;
+      if(L <= 0 || W <= 0) return;
+
+      // Scale so sketch fits in maxW × maxH, preserving aspect ratio
+      const OUTER_PAD = 12; // space above/right for outer dim lines
+      const availW = maxW - OUTER_PAD;
+      const availH = maxH - OUTER_PAD;
+      const scale = Math.min(availW / L, availH / W);
+      const rW = L * scale;  // rectangle width in pt
+      const rH = W * scale;  // rectangle height in pt
+
+      // Outer rectangle top-left (leave room for outer dim lines above and right)
+      const ox = skX + OUTER_PAD;   // outer box left x (dim line is above, to left)
+      const oy = skY + OUTER_PAD;   // outer box top y
+      const WALL = 1.5; // wall thickness in pt (gap between outer/inner rects)
+
+      // Draw outer rectangle
+      doc.setDrawColor(0,0,0); doc.setLineWidth(0.5);
+      doc.rect(ox, oy, rW, rH);
+      // Draw inner rectangle
+      doc.setLineWidth(0.4);
+      doc.rect(ox+WALL, oy+WALL, rW-WALL*2, rH-WALL*2);
+
+      // Room name centered inside
+      doc.setFont('times','normal'); doc.setFontSize(5.8); doc.setTextColor(0,0,0);
+      doc.text(room.name, ox + rW/2, oy + rH/2 + 2, {align:'center'});
+
+      // Outer dim line — top (horizontal) — tick style
+      const outerL = L + 8/12; // outer length in ft
+      const outerW = W + 8/12; // outer width in ft
+      const outerRW = outerL * scale;
+      const outerRH = outerW * scale;
+      const odx1 = ox - (outerRW - rW)/2;
+      const odx2 = ox + rW + (outerRW - rW)/2;
+      drawDimLine(odx1, oy - 5, odx2, oy - 5, ftStr(outerL), 'tick', 5.8);
+
+      // Inner dim line — top (horizontal) — arrow style
+      drawDimLine(ox+WALL, oy+WALL+4, ox+rW-WALL, oy+WALL+4, ftStr(L), 'arrow', 5.8);
+
+      // Outer dim line — right (vertical) — tick style
+      const ody1 = oy - (outerRH - rH)/2;
+      const ody2 = oy + rH + (outerRH - rH)/2;
+      drawDimLine(ox+rW+5, ody1, ox+rW+5, ody2, ftStr(outerW), 'tick', 5.8);
+
+      // Inner dim line — right (vertical) — arrow style
+      drawDimLine(ox+rW-WALL-4, oy+WALL, ox+rW-WALL-4, oy+rH-WALL, ftStr(W), 'arrow', 5.8);
+    }
+
+    // Draw the 7 measurement values to the right of the sketch
+    // startX = left edge of measurements block, startY = top baseline
+    function drawRoomMeasurements(room, startX, startY){
+      const a = calcRoomAreas(room);
+      const f3 = n => (+n).toFixed(2);
+      TN(10);
+      const lh = 13.5; // line height
+      // Left column (x = ~startX+60 for value, startX+70 for label)
+      const LV = startX + 55, LL = startX + 60;
+      // Right column
+      const RV = startX + 230, RL = startX + 236;
+
+      // Row 1
+      t(f3(a.walls),          LV, startY, 'right'); t('SF Walls',           LL, startY);
+      t(f3(a.ceiling),        RV, startY, 'right'); t('SF Ceiling',         RL, startY);
+      // Row 2
+      t(f3(a.wallsAndCeiling),LV, startY+lh, 'right'); t('SF Walls & Ceiling', LL, startY+lh);
+      t(f3(a.floor),          RV, startY+lh, 'right'); t('SF Floor',           RL, startY+lh);
+      // Row 3
+      t(f3(a.flooringSY),     LV, startY+lh*2, 'right'); t('SY Flooring',        LL, startY+lh*2);
+      t(f3(a.floorPerimeter), RV, startY+lh*2, 'right'); t('LF Floor Perimeter', RL, startY+lh*2);
+      // Row 4
+      t(f3(a.ceilPerimeter),  LV, startY+lh*3, 'right'); t('LF Ceil. Perimeter', LL, startY+lh*3);
+    }
+
+    // Height string e.g. "9' 3"" — used in header right-aligned
+    function heightStr(r){
+      const H = toFt(r.heightFt, r.heightIn);
+      return 'Height: ' + ftStr(H);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // FULL SKETCH PAGE — all rooms drawn proportionally, fills page zone
+    // ════════════════════════════════════════════════════════════════════════
+    function drawFullSketchPage(){
+      const dimRooms = rooms.filter(r => hasDims(r));
+      if(dimRooms.length === 0) return;
+
+      doc.addPage(); pageNum++;
+      drawHeader();
+      drawFooter(pageNum);
+
+      TN(10); t('Main Level', 18, 95);
+
+      // Drawing zone: x=36–576, y=105–675
+      const ZONE_X = 36, ZONE_Y = 105;
+      const ZONE_W = 540, ZONE_H = 560;
+      const n = dimRooms.length;
+      const areas = dimRooms.map(r => calcRoomAreas(r));
+
+      // Space around each room rect for dim lines
+      const OUTER_PAD = 28;
+      const GAP = n > 1 ? 24 : 0;
+
+      // --- Compute a single global scale so all rooms fit proportionally ---
+      // Horizontal: total of all L values must fit in (ZONE_W - GAP*(n-1) - OUTER_PAD*2*n)
+      const totalL  = areas.reduce((s,a) => s + a.L, 0);
+      const maxW    = Math.max(...areas.map(a => a.W));
+      const innerW  = ZONE_W - GAP*(n-1) - OUTER_PAD*2*n;  // available for rect widths
+      const innerH  = ZONE_H - OUTER_PAD*2;                 // available for rect heights
+
+      const scaleByW = innerW / totalL;
+      const scaleByH = innerH / maxW;
+      const scale    = Math.max(4, Math.min(scaleByW, scaleByH));
+
+      // --- Compute total rendered width to center the block horizontally ---
+      const totalRenderedW = areas.reduce((s,a) => s + a.L*scale + OUTER_PAD*2, 0) + GAP*(n-1);
+      let cx = ZONE_X + (ZONE_W - totalRenderedW) / 2;
+
+      dimRooms.forEach((room, i) => {
+        const a = areas[i];
+        const rW = a.L * scale;
+        const rH = a.W * scale;
+        const outerL = a.L + 8/12;
+        const outerW = a.W + 8/12;
+        const outerRW = outerL * scale;
+        const outerRH = outerW * scale;
+
+        // Center this room vertically in zone
+        const rx = cx + OUTER_PAD;
+        const ry = ZONE_Y + (ZONE_H - rH) / 2;
+        const WALL = Math.max(2, scale * 0.05);
+
+        doc.setDrawColor(0,0,0);
+        doc.setLineWidth(0.7); doc.rect(rx, ry, rW, rH);
+        doc.setLineWidth(0.5); doc.rect(rx+WALL, ry+WALL, rW-WALL*2, rH-WALL*2);
+
+        const nameSz = Math.min(11, Math.max(7, Math.min(rW, rH) / room.name.length * 1.6));
+        doc.setFont('times','normal'); doc.setFontSize(nameSz); doc.setTextColor(0,0,0);
+        doc.text(room.name, rx+rW/2, ry+rH/2+nameSz*0.35, {align:'center'});
+
+        const dimSz = Math.min(10, Math.max(7, scale * 0.6));
+
+        // Outer top — tick
+        const odx1 = rx - (outerRW-rW)/2;
+        const odx2 = rx + rW + (outerRW-rW)/2;
+        drawDimLine(odx1, ry-10, odx2, ry-10, ftStr(outerL), 'tick', dimSz);
+
+        // Inner top — arrow
+        drawDimLine(rx+WALL, ry+WALL+dimSz*1.8, rx+rW-WALL, ry+WALL+dimSz*1.8, ftStr(a.L), 'arrow', dimSz);
+
+        // Outer right — tick
+        const ody1 = ry - (outerRH-rH)/2;
+        const ody2 = ry + rH + (outerRH-rH)/2;
+        drawDimLine(rx+rW+10, ody1, rx+rW+10, ody2, ftStr(outerW), 'tick', dimSz);
+
+        // Inner right — arrow
+        drawDimLine(rx+rW-WALL-dimSz*1.4, ry+WALL, rx+rW-WALL-dimSz*1.4, ry+rH-WALL, ftStr(a.W), 'arrow', dimSz);
+
+        cx += rW + OUTER_PAD*2 + GAP;
+      });
+
+      // Compass + "Main Level" — bottom right, blue
+      const compX = 565, compY = 670;
+      doc.setLineWidth(0.8); doc.setDrawColor(68,114,196);
+      doc.setFont('times','bold'); doc.setFontSize(11); doc.setTextColor(68,114,196);
+      t('N', compX, compY-8, 'center');
+      doc.line(compX, compY-3, compX, compY+12);
+      doc.line(compX, compY-3, compX-3.5, compY+4);
+      doc.line(compX, compY-3, compX+3.5, compY+4);
+      doc.setFontSize(13);
+      t('Main Level', compX, compY+26, 'center');
+      doc.setTextColor(0,0,0);
+    }
+
+    // Build room groups
+    const roomGroups=[];
+    const mainItems=li.filter(i=>!i.room||i.room==='');
+    roomGroups.push({name:'Main Level',items:mainItems});
+    rooms.forEach(rm=>{
+      const rmi=li.filter(i=>String(i.room)===String(rm.id));
+      if(rmi.length>0) roomGroups.push({name:rm.name,items:rmi});
+    });
+
+    // Open first line-items page
+    doc.addPage(); pageNum++;
+    drawHeader();
+
+    // Centered title block — 3 lines matching real Xactimate (y=117, 134.1, 151.2)
+    TB(10); t(en,           PW/2, 117,   'center');
+    TN(10); t(insured,      PW/2, 134.1, 'center');
+    TN(10); t('Main Level', PW/2, 151.2, 'center');
+
+    let y=164.7; // matches real Xactimate section label baseline
+
+    // Tracks the section (room name or 'Labor Minimum Adjustments') whose items
+    // are currently being rendered. newPage() reads this to decide whether to
+    // draw a "CONTINUED - [section]" header on the new page.
+    // null = we are BETWEEN sections (fresh start, no CONTINUED header wanted).
+    let continuationLabel = null;
+
+    // newPage: break to a new page and redraw page header.
+    // If continuationLabel is set (mid-section overflow), also draw the
+    // "CONTINUED - [label]" banner + column header, and position y for items.
+    // If null (pre-section break), just land at y=90 and let the caller draw
+    // its own sketch/section label/column header fresh.
+    function newPage(){
+      drawFooter(pageNum);
+      doc.addPage(); pageNum++;
+      drawHeader();
+      if(continuationLabel){
+        // Centered bold banner at same vertical slot as estimate name on first LI page
+        TB(10); t('CONTINUED - ' + continuationLabel, PW/2, 117, 'center');
+        // Column header below banner (22.5pt gap, same as section-label-to-colheader)
+        drawColHeader(140);
+        y = 140 + 18.5; // 158.5 — first item baseline
+      } else {
+        // Fresh page — caller draws its own section structure from here
+        y = 90;
+      }
+      TN(9);
+    }
+
+    let globalNum=1;
+
+    let isFirstSection = true;
+
+    roomGroups.forEach(grp=>{
+      if(grp.items.length===0) return;
+
+      // Reset before pre-section overflow check: a fresh room starting on a
+      // new page should NOT show "CONTINUED - [prev room]".
+      continuationLabel = null;
+
+      // Add breathing room before a new section (not the first one)
+      if(!isFirstSection) y += 18;
+      isFirstSection = false;
+
+      // Check if this group is a named room with dimensions
+      const roomObj = rooms.find(r => r.name === grp.name && hasDims(r));
+      const SKETCH_H = roomObj ? 100 : 0; // height reserved for sketch+measurements block
+
+      // Section needs: sketch(if any) + label(13) + header(22.5) + at least one item(~30)
+      if(y + SKETCH_H + 65 > FOOTER_GUARD) newPage();
+
+      // Draw inline sketch block if room has dimensions
+      if(roomObj){
+        const areas = calcRoomAreas(roomObj);
+        // Sketch on left: maxW=120, maxH=90 — fits inline block
+        drawRoomSketch(roomObj, 36, y, 120, 90);
+
+        // Room name bold + Height right-aligned — same baseline as sketch top + 12
+        const labelY = y + 12;
+        TB(10); t(roomObj.name, 164.9, labelY);
+        TB(10); t(heightStr(roomObj), 576, labelY, 'right');
+
+        // Rule below room name
+        ln(164.9, labelY+5, 576, labelY+5, 0.5, 0);
+
+        // Measurements block — starts 8pt below rule
+        drawRoomMeasurements(roomObj, 164.9, labelY+18);
+
+        y += SKETCH_H;
+      }
+
+      // Section label
+      TB(10); t(grp.name, DL, y);
+      // From now on, any page break inside this section shows "CONTINUED - [room]"
+      continuationLabel = grp.name;
+      y += 22.5; // gap: section label baseline → col header text baseline
+
+      // Column header text + underline rule
+      drawColHeader(y);
+      y += 18.5; // 4pt to underline + 14.5pt gap to first item baseline
+
+      let secTotal=0;
+
+      grp.items.forEach((item, itemIdx)=>{
+        const tot=calcItem(item);
+        secTotal+=tot;
+
+        const lines=doc.splitTextToSize(item.desc,DW);
+        const lineCount=lines.length;
+
+        // Row height:
+        // Single-line: 16pt to next item baseline
+        // Multi-line: continuation lines 10pt apart, last line to next item 14pt
+        const itemH = lineCount===1 ? 16 : (lineCount-1)*10 + 14;
+
+        if(y + itemH > FOOTER_GUARD) newPage();
+
+        // Item number — black, same weight as description text (matches real Xactimate)
+        TN(9); t(globalNum+'.', DL, y);
+        globalNum++;
+
+        // Description text
+        TN(9);
+        lines.forEach((ln2,i2)=> t(ln2, DT, y+(i2*10)));
+
+        // Values on first line's baseline
+        t(fq(item.qty,item.unit), QR,y,'right');
+        t(f2(item.rem),            MR,y,'right');
+        t(f2(item.rep),            PR,y,'right');
+        t(f2(item.tax>0? item.qty*item.rep*item.tax/100 :0), XR,y,'right');
+        t(f2(tot),                 TR,y,'right');
+
+        // Advance: 16pt for single-line, 14pt after last continuation line
+        y += itemH;
+      });
+
+      // Section total — double rule + text (matching real Xactimate)
+      // Real layout: double rule, then 18.5pt to text baseline, then 4.7pt to next double rule
+      if(y + 30 > FOOTER_GUARD) newPage();
+      y += 4;
+      ln(36,y, 576,y, 0.6,0);
+      ln(36,y+2.2, 576,y+2.2, 0.6,0);
+      y += 18.5;
+      TN(9); t('Totals:  '+grp.name, DL,y);
+      t(f2(0), XR,y,'right');
+      t(f2(secTotal), TR,y,'right');
+      y += 4.7; // gap from baseline to next double rule
+    });
+
+    // ── Labor Minimum Adjustments section ────────────────────────────────────
+    // Reset here so that (a) pre-LM-section overflow fires with no CONTINUED banner,
+    // and (b) if lmAdjs is empty, the pre-grand-total check below also sees null.
+    continuationLabel = null;
+
+    if(lmAdjs.length > 0){
+      // Need gap after section total before starting a new section
+      y += 18; // breathing room between section total and new section label
+      if(y + 63 > FOOTER_GUARD) newPage();
+
+      // Section label
+      TB(10); t('Labor Minimum Adjustments', DL, y);
+      // Any overflow inside this section now shows "CONTINUED - Labor Minimum Adjustments"
+      continuationLabel = 'Labor Minimum Adjustments';
+      y += 22.5;
+      drawColHeader(y);
+      y += 18.5;
+
+      let lmSecTotal = 0;
+      lmAdjs.forEach(a => {
+        lmSecTotal += a.adjustment;
+        const desc  = a.code + ' MN  ' + a.name + ' - Minimum Charge';
+        const lines = doc.splitTextToSize(desc, DW);
+        const lineCount = lines.length;
+        const itemH = lineCount===1 ? 16 : (lineCount-1)*10 + 14;
+
+        if(y + itemH > FOOTER_GUARD) newPage();
+
+        TN(9); t('—', DL, y); // no item number for adjustments
+        lines.forEach((ln2,i2) => t(ln2, DT, y+(i2*10)));
+        t(fq(1,'EA'),         QR, y, 'right');
+        t(f2(0),              MR, y, 'right');
+        t(f2(a.adjustment),   PR, y, 'right');
+        t(f2(0),              XR, y, 'right');
+        t(f2(a.adjustment),   TR, y, 'right');
+        y += itemH;
+      });
+
+      if(y + 30 > FOOTER_GUARD) newPage();
+      y += 4;
+      ln(36,y, 576,y, 0.6,0); ln(36,y+2.2, 576,y+2.2, 0.6,0); y += 18.5;
+      TN(9); t('Totals:  Labor Minimum Adjustments', DL, y);
+      t(f2(0),       XR, y, 'right');
+      t(f2(lmSecTotal), TR, y, 'right');
+      y += 4.7;
+
+      // Done with LM — clear so the pre-grand-total newPage() stays clean
+      continuationLabel = null;
+    }
+
+    // Grand total block
+    if(y + 90 > FOOTER_GUARD){ newPage(); y+=10; }
+
+    ln(36,y, 576,y, 0.6,0); ln(36,y+2.2, 576,y+2.2, 0.6,0); y+=18.5;
+    TN(9); t('Total:  Main Level', DL,y);
+    TB(9); t(f2(0),XR,y,'right'); t(f2(grandTotal),TR,y,'right');
+    y+=4.7;
+
+    ln(36,y, 576,y, 0.6,0); ln(36,y+2.2, 576,y+2.2, 0.6,0); y+=18.5;
+    TN(9); t('Total: '+insured, DL,y);
+    TB(9); t(f2(0),XR,y,'right'); t(f2(grandTotal),TR,y,'right');
+    y+=4.7;
+
+    ln(36,y, 576,y, 0.6,0); ln(36,y+2.2, 576,y+2.2, 0.6,0); y+=18.5;
+    TB(9); t('Line Item Totals: '+en, DL,y);
+    t(f2(0),XR,y,'right'); t(f2(grandTotal),TR,y,'right');
+    y+=6;
+    ln(36,y, 576,y, 1.2,0);
+    ln(36,y+3, 576,y+3, 0.4,0);
+
+    drawFooter(pageNum);
+
+    // ════════════════════════════════════════════════════════════════════════
+    // SUMMARY PAGE — positions verified via pdfplumber from real Xactimate PDF
+    // "Summary" centered bold 12pt: y=144
+    // "Line Item Total": y=162, value right x=576
+    // Thin rule: y=166
+    // "Replacement Cost Value" bold: y=182.9
+    // Rule: y=187
+    // "Net Claim" bold: y=196.8
+    // Double rule: y=201 + y=203
+    // Signature hline: y=250, x=215.9–395
+    // Company name: y=258.6, x=215.9
+    // ════════════════════════════════════════════════════════════════════════
+    doc.addPage(); pageNum++;
+    drawHeader();
+
+    TB(12); t('Summary',PW/2,144,'center');
+
+    // Line Item Total — value right-aligned, short rule under value only (x=477–583.5)
+    TN(10); t('Line Item Total',36,172); t(f2(grandTotal),576,172,'right');
+    ln(477,176.2, 583.5,176.2, 0.5,0);
+
+    // RCV and Net Claim — bold, no rule between them, double rule after Net Claim
+    TB(10); t('Replacement Cost Value',36,192.9); t(fm(grandTotal),576,192.9,'right');
+    TB(10); t('Net Claim',36,206.8); t(fm(grandTotal),576,206.8,'right');
+    ln(477,210.8, 583.5,210.8, 0.8,0);
+    ln(477,213.0, 583.5,213.0, 0.5,0);
+
+    // Signature line
+    ln(215.9,256.5, 431.9,256.5, 0.5,0);
+    TN(10); t(coName,215.9,268.6);
+
+    drawFooter(pageNum);
+
+    // ════════════════════════════════════════════════════════════════════════
+    // RECAP OF TAXES (blank page)
+    // "Recap of Taxes" centered bold 12pt: y=138
+    // ════════════════════════════════════════════════════════════════════════
+    doc.addPage(); pageNum++;
+    drawHeader();
+    TB(12); t('Recap of Taxes',PW/2,138,'center');
+    drawFooter(pageNum);
+
+    // ════════════════════════════════════════════════════════════════════════
+    // RECAP BY ROOM (if rooms exist)
+    // ════════════════════════════════════════════════════════════════════════
+    if(rooms.length>0){
+      doc.addPage(); pageNum++;
+      drawHeader();
+      TB(12); t('Recap by Room',PW/2,138,'center');
+
+      let ry=165;
+      TB(9); t('Estimate: '+en, 36,ry); ry+=16;
+      TB(9); t('Area: '+insured, 36,ry); ry+=20;
+
+      roomGroups.filter(g=>g.items.length>0).forEach(grp=>{
+        const gt=grp.items.reduce((s,i)=>s+calcItem(i),0);
+        const pct=total>0?(gt/total*100).toFixed(2)+'%':'0.00%';
+        TN(9);
+        t('Area: '+grp.name, 50,ry);
+        t(f2(gt),  TR-60,ry,'right');
+        t(pct,     TR,   ry,'right');
+        ry+=14;
+      });
+
+      ln(36,ry+3, TR,ry+3, 0.7,0); ry+=10;
+      TB(9); t('Subtotal of Areas',50,ry); t(f2(total),TR-60,ry,'right'); t('100.00%',TR,ry,'right');
+      ry+=14;
+      ln(36,ry+3, TR,ry+3, 0.7,0); ry+=10;
+      TB(9); t('Total',36,ry); t(f2(total),TR-60,ry,'right'); t('100.00%',TR,ry,'right');
+
+      drawFooter(pageNum);
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // RECAP BY CATEGORY
+    // Layout verified via pdfplumber from real Xactimate PDF (NICASIO_3580_MIT)
+    // Title: "Recap by Category" centered bold 12pt, baseline y=124.2
+    // Col headers: "Items" x=36, "Total" right x=504, "%" right x=576
+    //   bold 12pt, underline at y=165.8
+    // Category rows: bold 10pt, 14pt apart
+    // Subtotal: partial rules, then "Subtotal" row
+    // ════════════════════════════════════════════════════════════════════════
+    const TRADE_CATEGORIES = {
+      TMP:'TEMPORARY REPAIRS',  RFG:'ROOFING',     LAB:'GENERAL LABOR',
+      DRY:'DRYWALL',            INS:'INSULATION',   PNT:'PAINTING',
+      FCC:'FLOOR COVERING - CERAMIC', CLN:'CLEANING',
+    };
+
+    // Aggregate totals by trade category
+    const catTotals = {};
+    li.forEach(item => {
+      const code = item.trade;
+      if(!code) return;
+      const catName = TRADE_CATEGORIES[code] || code;
+      catTotals[catName] = (catTotals[catName] || 0) + calcItem(item);
+    });
+    // Add labor minimum adjustments to their categories
+    if(applyLaborMins){
+      lmAdjs.forEach(a => {
+        const catName = TRADE_CATEGORIES[a.code] || a.code;
+        catTotals[catName] = (catTotals[catName] || 0) + a.adjustment;
+      });
+    }
+
+    const catEntries = Object.entries(catTotals).filter(([,v])=>v>0).sort((a,b)=>a[0].localeCompare(b[0]));
+
+    if(catEntries.length > 0){
+      doc.addPage(); pageNum++;
+      drawHeader();
+
+      TB(12); t('Recap by Category', PW/2, 124, 'center');
+
+      // Column headers
+      const CX_TOT = 504;  // "Total" right edge
+      const CX_PCT = 576;  // "%" right edge
+      let cy = 162.6;
+      TB(12);
+      t('Items', 36, cy);
+      t('Total', CX_TOT, cy, 'right');
+      t('%',     CX_PCT, cy, 'right');
+      ln(36, cy+4, 576, cy+4, 0.6, 0);
+
+      cy += 22; // gap to first category row
+
+      // Category rows
+      TB(10);
+      catEntries.forEach(([catName, catTotal]) => {
+        const pct = grandTotal > 0 ? (catTotal / grandTotal * 100).toFixed(2) + '%' : '0.00%';
+        t(catName, 36, cy);
+        t(f2(catTotal), CX_TOT, cy, 'right');
+        t(pct,          CX_PCT, cy, 'right');
+        cy += 14.2;
+      });
+
+      // Partial rules under last category (3 segments matching real Xactimate)
+      ln(36, cy, 247.5, cy, 0.6, 0);
+      ln(418.5, cy, CX_TOT, cy, 0.6, 0);
+      ln(512.5, cy, CX_PCT, cy, 0.6, 0);
+      cy += 16;
+
+      // Subtotal row
+      TB(10);
+      t('Subtotal', 36, cy);
+      t(f2(grandTotal), CX_TOT, cy, 'right');
+      t('100.00%',      CX_PCT, cy, 'right');
+
+      drawFooter(pageNum);
+    }
+
+    // ── Full Sketch Page (if any rooms have dimensions) ───────────────────────
+    if(rooms.some(r => hasDims(r))){
+      drawFullSketchPage();
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // PHOTO PAGES — layout driven by photosPerPage (2 / 4 / 8)
+    // ════════════════════════════════════════════════════════════════════════
+    if(photos.length>0){
+      const ppp = photosPerPage;
+
+      // Usable vertical zone: below header (y=82) above footer rule (y=714)
+      const ZONE_Y = 90;
+      const ZONE_H = 614; // 714 - 90 - 10 bottom padding
+
+      // 2-per-page: Xactimate style
+      // Number in left margin (~x=130), image starts at x=155, ends ~x=490
+      // Image width ≈ 335pt, height ≈ (614 - 20gap) / 2 = 297pt each
+      const LAYOUT = {
+        2: { cols:1, rows:2, imgX:155, imgW:335, gapY:20, numX:148, numAlign:'right' },
+        4: { cols:2, rows:2, imgX:36,  imgW:249, gapY:16, gapX:16, numAbove:true },
+        8: { cols:2, rows:4, imgX:36,  imgW:249, gapY:10, gapX:16, numAbove:true },
+      };
+      const L = LAYOUT[ppp] || LAYOUT[2];
+      const rows = L.rows;
+      const gapY = L.gapY;
+      const iH = (ZONE_H - (rows-1)*gapY) / rows;
+
+      for(let i=0; i<photos.length; i+=ppp){
+        doc.addPage(); pageNum++;
+        drawHeader();
+        const chunk = photos.slice(i, i+ppp);
+
+        chunk.forEach((p, j) => {
+          const col  = ppp===2 ? 0 : j % L.cols;
+          const row2 = ppp===2 ? j : Math.floor(j / L.cols);
+
+          const gapX = L.gapX || 0;
+          const iW   = ppp===2 ? L.imgW : (540 - (L.cols-1)*gapX) / L.cols;
+          const ix   = ppp===2 ? L.imgX : 36 + col*(iW + gapX);
+          const iy   = ZONE_Y + row2*(iH + gapY);
+
+          const photoNum = String(i+j+1);
+
+          if(ppp === 2){
+            // Number in left margin, vertically centered beside image
+            TN(10);
+            const numY = iy + iH/2 + 4;
+            t(photoNum, L.numX, numY, 'right');
+          } else {
+            // Number above image
+            TN(9);
+            t(photoNum, ix, iy - 3);
+          }
+
+          try{ doc.addImage(p.src,'JPEG', ix, iy, iW, iH); }catch(e){}
+        });
+
+        drawFooter(pageNum);
+      }
+    }
+
+    // ── Output ────────────────────────────────────────────────────────────────
+    const pdfBlob=doc.output('blob');
+    pdfBlobUrl=URL.createObjectURL(pdfBlob);
+    link.href=pdfBlobUrl;
+    link.setAttribute('download',en+'.pdf');
+    link.textContent='Open / Save — '+en+'.pdf';
+    link.style.display='inline-block';
+    status.textContent='Ready!';
+    status.className='status ok';
+
+  } catch(err){
+    console.error(err);
+    status.textContent='Error: '+err.message;
+    status.className='status err';
+  }
+  btn.disabled=false; btn.innerHTML='Generate PDF';
+}
+
+// Init
+renderPL(); renderLI();
+</script>
+</body>
+</html>
+-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>XactGen</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
